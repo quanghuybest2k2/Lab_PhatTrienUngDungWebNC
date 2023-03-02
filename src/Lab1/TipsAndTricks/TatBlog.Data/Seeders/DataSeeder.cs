@@ -18,7 +18,7 @@ namespace TatBlog.Data.Seeders
         public void Initialize()
         {
             _dbContext.Database.EnsureCreated();
-            if (_dbContext.Posts.Any()) return;
+            //if (_dbContext.Posts.Any()) return;
             var authors = AddAuthors();
             var categories = AddCategories();
             var tags = AddTags();
@@ -26,6 +26,7 @@ namespace TatBlog.Data.Seeders
         }
         private IList<Author> AddAuthors()
         {
+
             var authors = new List<Author>()
             {
                 new()
@@ -50,7 +51,15 @@ namespace TatBlog.Data.Seeders
                     JoinedDate = new DateTime(2021, 4, 19)
                 }
             };
-            _dbContext.Authors.AddRange(authors);
+
+            foreach (var item in authors)
+            {
+                if (!_dbContext.Authors.Any(a => a.UrlSlug == item.UrlSlug))
+                {
+                    _dbContext.Authors.Add(item);
+                }
+            }
+            //_dbContext.Authors.AddRange(authors);
             _dbContext.SaveChanges();
             return authors;
         }

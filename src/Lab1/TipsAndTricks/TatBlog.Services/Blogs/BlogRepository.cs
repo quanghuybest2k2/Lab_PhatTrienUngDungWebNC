@@ -1,7 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Azure;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Text;
 using System.Threading.Tasks;
 using TatBlog.Core.Contracts;
@@ -56,7 +60,7 @@ namespace TatBlog.Services.Blogs
         public async Task<Post> GetPostAsync(int year, int month, string slug, CancellationToken cancellationToken = default)
         {
             IQueryable<Post> postsQuery = _context.Set<Post>()
-                .Include(x => x.Category)
+                .Include(x => x.Category) // Include lấy quan hệ 2 bảng, post quan hệ với bảng khác
                 .Include(x => x.Author);
             if (year > 0)
             {
@@ -94,8 +98,8 @@ namespace TatBlog.Services.Blogs
                     Id = x.Id,
                     Name = x.Name,
                     UrlSlug = x.UrlSlug,
-                    Description= x.Description,
-                    PostCount = x.Posts.Count(p=>p.Published)
+                    Description = x.Description,
+                    PostCount = x.Posts.Count(p => p.Published)
                 });
             return await tagQuery
                 .ToPagedListAsync(pagingParams, cancellationToken);
@@ -103,14 +107,70 @@ namespace TatBlog.Services.Blogs
         // Tìm một thẻ (Tag) theo tên định danh (slug)
         public async Task<Tag> GetTagBySlugAsync(string slug, CancellationToken cancellationToken = default)
         {
-            IQueryable<Tag>TagQuery = _context.Set<Tag>()
-                .Include(x => x.Name)
-                .Include(x => x.Description);
-            if (!string.IsNullOrWhiteSpace(slug))
+            return await _context.Set<Tag>()
+                .FirstOrDefaultAsync(t => t.UrlSlug == slug, cancellationToken);
+        }
+        //Lấy danh sách tất cả các thẻ (Tag) kèm theo số bài viết chứa thẻ đó. Kết quả trả về kiểu IList<TagItem>.
+        public async Task<IList<TagItem>> GetTagListAsync(CancellationToken cancellationToken = default)
+        {
+            var tagQuery = _context.Set<Tag>()
+                 .Select(x => new TagItem()
+                 {
+                     Id = x.Id,
+                     Name = x.Name,
+                     UrlSlug = x.UrlSlug,
+                     Description = x.Description,
+                     PostCount = x.Posts.Count(p => p.Published)
+                 });
+            return await tagQuery.ToListAsync(cancellationToken);
+        }
+        // Xóa một thẻ theo mã cho trước.
+        public async Task<Tag> RemoveTagById(int id, CancellationToken cancellationToken = default)
+        {
+            // Tìm thẻ theo ID
+            var tag = await _context.Set<Tag>()
+                .FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
+            if (tag != null)
             {
-                TagQuery = TagQuery.Where(x => x.UrlSlug == slug);
+                // Xóa thẻ khỏi cơ sở dữ liệu
+                _context.Set<Tag>().Remove(tag);
+                await _context.SaveChangesAsync(cancellationToken);
+                Console.WriteLine("Đã xóa thành công!");
             }
-            return await TagQuery.FirstOrDefaultAsync(cancellationToken);
+            else
+            {
+                Console.WriteLine("Không có ID này!");
+            }
+            return tag;
+        }
+        //Tìm một chuyên mục (Category) theo tên định danh (slug). 
+        public async Task<Category> GetCategoryBySlugAsync(string slug, CancellationToken cancellationToken = default)
+        {
+            return await _context.Set<Category>()
+                .FirstOrDefaultAsync(c => c.UrlSlug == slug, cancellationToken);
+        }
+        // Tìm một chuyên mục theo mã số cho trước.
+        public async Task<Category> GetCategoryByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            return await _context.Set<Category>()
+                 .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+        }
+        // Thêm hoặc cập nhật một chuyên mục/chủ đề.
+        public async Task<bool> AddOrUpdateCategory(Category category, CancellationToken cancellationToken = default)
+        {
+            // Tìm thẻ theo ID
+            var category_id = await _context.Set<Category>()
+                .FirstOrDefaultAsync(c => c.Id == category.Id, cancellationToken);
+            if (category_id == null)
+            {
+                // Name = ".NET Core", Description = ".NET Core", UrlSlug="asp-dot-net-core", ShowOnMenu=true
+                 _context.Set<Category>().Add(category);
+            }
+            else
+            {
+                Console.WriteLine("Đã tồn tại Category này!");
+            }
+            return true;
         }
     }
 }

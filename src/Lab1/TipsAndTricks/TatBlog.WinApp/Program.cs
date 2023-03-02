@@ -1,4 +1,5 @@
 ﻿using System.Data.Common;
+using TatBlog.Core.Entities;
 using TatBlog.Data.Contexts;
 using TatBlog.Data.Seeders;
 using TatBlog.Services.Blogs;
@@ -86,27 +87,6 @@ using TatBlog.WinApp;
 //    Console.WriteLine("{0,-5}{1,-50}{2,10}", item.Id, item.Name, item.PostCount);
 //}
 //-------------------------------------------------------------------------------------
-// Tạo đối tượng DBContext để quản lý phiên làm việc
-// với CSDL và trạng thái của đối tượng
-var context = new BlogDbContext();
-// Tạo đối tượng BlogRepository
-IBlogRepository blogRepo = new BlogRepository(context);
-var pagingParams = new PagingParams
-{
-    PageNumber = 1, //Lấy kết quả ở trang số 1
-    PageSize = 5, // Lấy 5 mẫu tin
-    SortColumn = "Name", // Sắp xếp theo tên
-    SortOrder = "DESC" // Theo chiều giảm dần
-};
-// Lấy danh sách từ khóa
-var tagsList = await blogRepo.GetPagedTagsAsync(pagingParams);
-// Xuất ra màn hình
-Console.WriteLine("{0,-5}{1,-50}{2,10}", "ID", "Name", "Count");
-foreach (var item in tagsList)
-{
-    Console.WriteLine("{0,-5}{1,-50}{2,10}", item.Id, item.Name, item.PostCount);
-}
-//-------------------------------------------------------------------------------------
 //// Tạo đối tượng DBContext để quản lý phiên làm việc
 //// với CSDL và trạng thái của đối tượng
 //var context = new BlogDbContext();
@@ -120,11 +100,101 @@ foreach (var item in tagsList)
 //    SortOrder = "DESC" // Theo chiều giảm dần
 //};
 //// Lấy danh sách từ khóa
-//string slug = "Blazor.png";
-//var tagsList = await blogRepo.GetTagBySlugAsync(slug);
+//var tagsList = await blogRepo.GetPagedTagsAsync(pagingParams);
 //// Xuất ra màn hình
-//Console.WriteLine("{1,-50}{2,10}{2,10}", "Name", "Description", "UrlSlug");
+//Console.WriteLine("{0,-5}{1,-50}{2,10}", "ID", "Name", "Count");
 //foreach (var item in tagsList)
 //{
-//    Console.WriteLine("{1,-50}{2,10}{2,10}", item.Id, item.Name, item.UrlSlug);
+//    Console.WriteLine("{0,-5}{1,-50}{2,10}", item.Id, item.Name, item.PostCount);
 //}
+//-------------------------------------------------------------------------------------
+//// Tạo đối tượng DBContext để quản lý phiên làm việc
+//// với CSDL và trạng thái của đối tượng
+//var context = new BlogDbContext();
+//// Tạo đối tượng BlogRepository
+//IBlogRepository blogRepo = new BlogRepository(context);
+
+//var pagingParams = new PagingParams
+//{
+//    PageNumber = 1, //Lấy kết quả ở trang số 1
+//    PageSize = 5, // Lấy 5 mẫu tin
+//    SortColumn = "Name", // Sắp xếp theo tên
+//    SortOrder = "DESC" // Theo chiều giảm dần
+//};
+//// Lấy danh sách từ khóa
+//string slug = "Blazor.png";
+//var tag = await blogRepo.GetTagBySlugAsync(slug);
+//// Xuất ra màn hình
+//Console.WriteLine("{0} {1} {2}", "Name", "Description", "UrlSlug");
+//Console.WriteLine("{0} {1} {2}", tag.Id, tag.Name, tag.UrlSlug);
+//-------------------------------------------------------------------------------------
+//var context = new BlogDbContext();
+//IBlogRepository blogRepo = new BlogRepository(context);
+//var tag = await blogRepo.GetTagListAsync();
+//// Xuất ra màn hình
+//foreach (var item in tag)
+//{
+//    Console.WriteLine("{0} {1} {2}", "Id", "Name", "PostCount");
+//    Console.WriteLine("{0} {1} {2}", item.Id, item.Name, item.PostCount);
+//}
+//-------------------------------------------------------------------------------------
+//// Xóa một thẻ theo mã cho trước.
+//var context = new BlogDbContext();
+//IBlogRepository blogRepo = new BlogRepository(context);
+//var tag = await blogRepo.RemoveTagById(1);
+//-------------------------------------------------------------------------------------
+////Tìm một chuyên mục (Category) theo tên định danh (slug).
+//var context = new BlogDbContext();
+//IBlogRepository blogRepo = new BlogRepository(context);
+//var pagingParams = new PagingParams
+//{
+//    PageNumber = 1, //Lấy kết quả ở trang số 1
+//    PageSize = 5, // Lấy 5 mẫu tin
+//    SortColumn = "Name", // Sắp xếp theo tên
+//    SortOrder = "DESC" // Theo chiều giảm dần
+//};
+//// Lấy danh sách từ khóa
+//string slug = "net.png";
+//var category = await blogRepo.GetCategoryBySlugAsync(slug);
+//// Xuất ra màn hình
+//Console.WriteLine("{0} {1} {2}", "Name", "Description", "UrlSlug");
+//Console.WriteLine("{0} {1} {2}", category.Id, category.Name, category.UrlSlug);
+//-------------------------------------------------------------------------------------
+////Tìm một chuyên mục (Category) theo tên định danh (slug).
+//var context = new BlogDbContext();
+//IBlogRepository blogRepo = new BlogRepository(context);
+//var pagingParams = new PagingParams
+//{
+//    PageNumber = 1, //Lấy kết quả ở trang số 1
+//    PageSize = 5, // Lấy 5 mẫu tin
+//    SortColumn = "Name", // Sắp xếp theo tên
+//    SortOrder = "DESC" // Theo chiều giảm dần
+//};
+//// Lấy danh sách từ khóa
+//int id = 1;
+//var category = await blogRepo.GetCategoryByIdAsync(id);
+//// Xuất ra màn hình
+//Console.WriteLine("{0} {1} {2}", "Name", "Description", "UrlSlug");
+//Console.WriteLine("{0} {1} {2}", category.Id, category.Name, category.UrlSlug);
+//-------------------------------------------------------------------------------------
+//Tìm một chuyên mục (Category) theo tên định danh (slug).
+var context = new BlogDbContext();
+IBlogRepository blogRepo = new BlogRepository(context);
+var pagingParams = new PagingParams
+{
+    PageNumber = 1, //Lấy kết quả ở trang số 1
+    PageSize = 5, // Lấy 5 mẫu tin
+    SortColumn = "Name", // Sắp xếp theo tên
+    SortOrder = "DESC" // Theo chiều giảm dần
+};
+// Lấy danh sách từ khóa
+var category = new Category();
+category.Name = "Doan Quang Huy";
+category.Name = "Huy can ne";
+category.UrlSlug = "huy-can-ne-hi-hi";
+// Name = ".NET Core", Description = ".NET Core", UrlSlug="asp-dot-net-core", ShowOnMenu=true
+var categoryList = await blogRepo.AddOrUpdateCategory(category);
+// Xuất ra màn hình
+Console.WriteLine("{0} {1} {2}", "Name", "Description", "UrlSlug");
+Console.WriteLine("{0} {1} {2}", category.Id, category.Name, category.UrlSlug);
+//-------------------------------------------------------------------------------------
