@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TatBlog.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -73,7 +73,7 @@ namespace TatBlog.Data.Migrations
                     UrlSlug = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     ImageUrl = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     ViewCount = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
-                    Published = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    Published = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     PostedDate = table.Column<DateTime>(type: "datetime", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "datetime", nullable: true),
                     CategoryId = table.Column<int>(type: "int", nullable: false),

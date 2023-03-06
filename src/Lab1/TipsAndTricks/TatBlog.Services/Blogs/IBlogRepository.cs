@@ -47,6 +47,32 @@ namespace TatBlog.Services.Blogs
         Task<Category> GetCategoryByIdAsync(int id, CancellationToken cancellationToken = default);
         // Thêm hoặc cập nhật một chuyên mục/chủ đề.
         Task<bool> AddOrUpdateCategory(Category category, CancellationToken cancellationToken = default);
+        // Xóa một chuyên mục theo mã số cho trước
+        Task<Category> RemoveCategoryByIdAsync(int id, CancellationToken cancellationToken = default);
+        // Kiểm tra tên định danh (slug) của một chuyên mục đã tồn tại hay chưa. 
+        Task<bool> FindSlugExistedAsync(string slug, CancellationToken cancellationToken = default);
+        // Lấy và phân trang danh sách chuyên mục, kết quả trả về kiểu IPagedList<CategoryItem>.
+        Task<IPagedList<CategoryItem>> Paginationcategory(IPagingParams pagingParams, CancellationToken cancellationToken);
+        // Đếm số lượng bài viết trong N tháng gần nhất. N là tham số đầu vào. Kết
+        // quả là một danh sách các đối tượng chứa các thông tin sau: Năm, Tháng, Số
+        // bài viết.
+        Task<int> CountObject_Valid_Condition_InPostQuery(PostQuery query, CancellationToken cancellationToken);
+        // Thêm hay cập nhật một bài viết.
+        Task<bool> AddOrUpdatePost(Post post, CancellationToken cancellationToken = default);
+        // Tìm một bài viết theo mã số.
+        Task<Post> FindPostByIdAsync(int id, CancellationToken cancellationToken = default);
+        // Chuyển đổi trạng thái Published của bài viết.
+        Task<bool> ConvertStatusPublishedAsync(bool published, CancellationToken cancellationToken = default);
+        // Lấy ngẫu nhiên N bài viết. N là tham số đầu vào. 
+        Task<IList<Post>> GetPostRandomsAsync(int numPosts, CancellationToken cancellationToken = default);
+        //Tìm tất cả bài viết thỏa mãn điều kiện tìm kiếm được cho trong đối tượng
+        // PostQuery(kết quả trả về kiểu IList<Post>).
+        Task<IList<Post>> FindAllPostValidCondition(PostQuery query, CancellationToken cancellationToken);
+        // Tìm và phân trang các bài viết thỏa mãn điều kiện tìm kiếm được cho trong
+        // đối tượng PostQuery(kết quả trả về kiểu IPagedList<Post>)
+        Task<IPagedList<Post>> FindAndPagination_Valid_Condition_InPostQuery(PostQuery query, IPagingParams pagingParams, CancellationToken cancellationToken);
+        // Đếm số lượng bài viết thỏa mãn điều kiện tìm kiếm được cho trong đối
+        // tượng PostQuery.
 
     }
 }

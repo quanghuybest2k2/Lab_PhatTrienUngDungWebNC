@@ -158,19 +158,224 @@ namespace TatBlog.Services.Blogs
         // Thêm hoặc cập nhật một chuyên mục/chủ đề.
         public async Task<bool> AddOrUpdateCategory(Category category, CancellationToken cancellationToken = default)
         {
-            // Tìm thẻ theo ID
-            var category_id = await _context.Set<Category>()
-                .FirstOrDefaultAsync(c => c.Id == category.Id, cancellationToken);
-            if (category_id == null)
+            var categoryQuery = await _context.Set<Category>().SingleOrDefaultAsync(c => c.Id.Equals(category.Id), cancellationToken);
+            if (categoryQuery != null)
             {
-                // Name = ".NET Core", Description = ".NET Core", UrlSlug="asp-dot-net-core", ShowOnMenu=true
-                 _context.Set<Category>().Add(category);
+                categoryQuery.Name = category.Name;
+                categoryQuery.Description = category.Description;
+                categoryQuery.UrlSlug = category.UrlSlug;
+                await _context.SaveChangesAsync(cancellationToken);
+                return true;
             }
             else
             {
-                Console.WriteLine("Đã tồn tại Category này!");
+                await _context.Set<Category>().AddAsync(category, cancellationToken);
+                await _context.SaveChangesAsync(cancellationToken);
+                return true;
+            }
+            return false;
+        }
+        // Xóa một chuyên mục theo mã số cho trước
+        public async Task<Category> RemoveCategoryByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            // Tìm thẻ theo ID
+            var category = await _context.Set<Category>()
+                .FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
+            if (category != null)
+            {
+                // Xóa chuyen muc khỏi cơ sở dữ liệu
+                _context.Set<Category>().Remove(category);
+                await _context.SaveChangesAsync(cancellationToken);
+                Console.WriteLine("Đã xóa thành công!");
+            }
+            else
+            {
+                Console.WriteLine("Không có ID này!");
+            }
+            return category;
+        }
+        // Lấy và phân trang danh sách chuyên mục, kết quả trả về kiểu IPagedList<CategoryItem>.
+
+        // Đếm số lượng bài viết trong N tháng gần nhất. N là tham số đầu vào. Kết
+        // quả là một danh sách các đối tượng chứa các thông tin sau: Năm, Tháng, Số
+        // bài viết.
+        public async Task<int> CountObject_Valid_Condition_InPostQuery(PostQuery query, CancellationToken cancellationToken)
+        {
+            IQueryable<Post> postQuery = _context.Set<Post>().Include(x => x.Tags);
+            if (query.Year > 0)
+            {
+                postQuery = postQuery.Where(x => x.PostedDate.Year == query.Year);
+            }
+            if (query.Month > 0)
+            {
+                postQuery = postQuery.Where(x => x.PostedDate.Month == query.Month);
+            }
+            if (query.AuthorId > 0)
+            {
+                postQuery = postQuery.Where(x => x.AuthorId == query.AuthorId);
+            }
+            if (query.CategoryId > 0)
+            {
+                postQuery = postQuery.Where(x => x.CategoryId == query.CategoryId);
+            }
+            if (!string.IsNullOrWhiteSpace(query.UrlSlug))
+            {
+                postQuery = postQuery.Where(x => x.UrlSlug == query.UrlSlug);
+            }
+
+            return await postQuery.CountAsync(cancellationToken);
+
+        }
+        // Kiểm tra tên định danh (slug) của một chuyên mục đã tồn tại hay chưa. 
+        public async Task<bool> FindSlugExistedAsync(string slug, CancellationToken cancellationToken = default)
+        {
+            // Tìm thẻ theo ID
+            var category_slug = await _context.Set<Category>()
+                .FirstOrDefaultAsync(c => c.UrlSlug == slug, cancellationToken);
+            if (category_slug != null)
+            {
+                Console.WriteLine($"Đã tồn tại slug: {slug} này!");
+            }
+            else
+            {
+                Console.WriteLine($"Chưa có slug: {slug}.");
             }
             return true;
         }
+        // Lấy và phân trang danh sách chuyên mục, kết quả trả về kiểu IPagedList<CategoryItem>.
+        public async Task<IPagedList<CategoryItem>> Paginationcategory(IPagingParams pagingParams, CancellationToken cancellationToken)
+        {
+            var tagQuery = _context.Set<Category>()
+                                     .Select(x => new CategoryItem()
+                                     {
+                                         Id = x.Id,
+                                         Name = x.Name,
+                                         UrlSlug = x.UrlSlug,
+                                         Description = x.Description,
+                                         ShowOnMenu = x.ShowOnMenu,
+                                         PostCount = x.Posts.Count(p => p.Published)
+                                     });
+            return await tagQuery.ToPagedListAsync(pagingParams, cancellationToken);
+        }
+        // Đếm số lượng bài viết trong N tháng gần nhất. N là tham số đầu vào. Kết  quả là một danh sách các đối tượng chứa
+        // các thông tin sau: Năm, Tháng, Số bài viết.
+        // Thêm hay cập nhật một bài viết.
+        public async Task<bool> AddOrUpdatePost(Post post, CancellationToken cancellationToken = default)
+        {
+            var postQuery = await _context.Set<Post>().SingleOrDefaultAsync(p => p.Id.Equals(post.Id), cancellationToken);
+            if (postQuery != null)
+            {
+                postQuery.Title = post.Title;
+                postQuery.ShortDescription = post.ShortDescription;
+                postQuery.Description = post.Description;
+                postQuery.Meta = post.Meta;
+                postQuery.UrlSlug = post.UrlSlug;
+                postQuery.ImageUrl = post.ImageUrl;
+                postQuery.ViewCount = post.ViewCount;
+                postQuery.Published = post.Published;
+                await _context.SaveChangesAsync(cancellationToken);
+                return true;
+            }
+            else
+            {
+                await _context.Set<Post>().AddAsync(post, cancellationToken);
+                await _context.SaveChangesAsync(cancellationToken);
+                return true;
+            }
+            return false;
+        }
+        // Tìm một bài viết theo mã số.
+        public async Task<Post> FindPostByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var post = await _context.Set<Post>()
+                .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+            if (post == null)
+            {
+                Console.WriteLine("Không thấy bài viết này");
+            }
+            return post;
+        }
+        // Chuyển đổi trạng thái Published của bài viết.
+        public async Task<bool> ConvertStatusPublishedAsync(bool published, CancellationToken cancellationToken = default)
+        {
+            // Tìm thẻ theo ID
+            var post = await _context.Set<Post>()
+                .FirstOrDefaultAsync(p => p.Published == published, cancellationToken);
+            if (post.Published == true)
+            {
+                post.Published = false;
+            }
+            else
+            {
+                post.Published = true;
+            }
+            return true;
+        }
+        // Lấy ngẫu nhiên N bài viết. N là tham số đầu vào. 
+        public async Task<IList<Post>> GetPostRandomsAsync(int numPosts, CancellationToken cancellationToken = default)
+        {
+            var random = new Random();
+            return await _context.Set<Post>().OrderBy(x => Guid.NewGuid()).Take(numPosts).ToListAsync(cancellationToken);
+
+        }
+        //Tìm tất cả bài viết thỏa mãn điều kiện tìm kiếm được cho trong đối tượng
+        // PostQuery(kết quả trả về kiểu IList<Post>).
+
+        public async Task<IList<Post>> FindAllPostValidCondition(PostQuery query, CancellationToken cancellationToken)
+        {
+            IQueryable<Post> postQuery = _context.Set<Post>().Include(x => x.Tags);
+            if (query.Year > 0)
+            {
+                postQuery = postQuery.Where(x => x.PostedDate.Year == query.Year);
+            }
+            if (query.Month > 0)
+            {
+                postQuery = postQuery.Where(x => x.PostedDate.Month == query.Month);
+            }
+            if (query.AuthorId > 0)
+            {
+                postQuery = postQuery.Where(x => x.AuthorId == query.AuthorId);
+            }
+            if (query.CategoryId > 0)
+            {
+                postQuery = postQuery.Where(x => x.CategoryId == query.CategoryId);
+            }
+            if (!string.IsNullOrWhiteSpace(query.UrlSlug))
+            {
+                postQuery = postQuery.Where(x => x.UrlSlug == query.UrlSlug);
+            }
+
+            return await postQuery.ToListAsync(cancellationToken);
+        }
+        // Tìm và phân trang các bài viết thỏa mãn điều kiện tìm kiếm được cho trong
+        // đối tượng PostQuery(kết quả trả về kiểu IPagedList<Post>)
+        public async Task<IPagedList<Post>> FindAndPagination_Valid_Condition_InPostQuery(PostQuery query, IPagingParams pagingParams, CancellationToken cancellationToken)
+        {
+            IQueryable<Post> postQuery = _context.Set<Post>().Include(x => x.Tags);
+            if (query.Year > 0)
+            {
+                postQuery = postQuery.Where(x => x.PostedDate.Year == query.Year);
+            }
+            if (query.Month > 0)
+            {
+                postQuery = postQuery.Where(x => x.PostedDate.Month == query.Month);
+            }
+            if (query.AuthorId > 0)
+            {
+                postQuery = postQuery.Where(x => x.AuthorId == query.AuthorId);
+            }
+            if (query.CategoryId > 0)
+            {
+                postQuery = postQuery.Where(x => x.CategoryId == query.CategoryId);
+            }
+            if (!string.IsNullOrWhiteSpace(query.UrlSlug))
+            {
+                postQuery = postQuery.Where(x => x.UrlSlug == query.UrlSlug);
+            }
+            return await postQuery.ToPagedListAsync(pagingParams, cancellationToken);
+        }
+        // Đếm số lượng bài viết thỏa mãn điều kiện tìm kiếm được cho trong đối
+        // tượng PostQuery.
+
     }
 }

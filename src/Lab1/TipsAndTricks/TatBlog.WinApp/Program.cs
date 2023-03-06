@@ -4,7 +4,11 @@ using TatBlog.Data.Contexts;
 using TatBlog.Data.Seeders;
 using TatBlog.Services.Blogs;
 using TatBlog.WinApp;
+using System.Text;
+using System;
+using System.Linq;
 
+Console.OutputEncoding = Encoding.Unicode;
 //---------------------------------------------------------------------------------
 //// Tạo đối tượng DBContext để quản lý phiên làm việc
 //// với CSDL và trạng thái của đối tượng
@@ -177,24 +181,56 @@ using TatBlog.WinApp;
 //Console.WriteLine("{0} {1} {2}", "Name", "Description", "UrlSlug");
 //Console.WriteLine("{0} {1} {2}", category.Id, category.Name, category.UrlSlug);
 //-------------------------------------------------------------------------------------
-//Tìm một chuyên mục (Category) theo tên định danh (slug).
-var context = new BlogDbContext();
-IBlogRepository blogRepo = new BlogRepository(context);
-var pagingParams = new PagingParams
-{
-    PageNumber = 1, //Lấy kết quả ở trang số 1
-    PageSize = 5, // Lấy 5 mẫu tin
-    SortColumn = "Name", // Sắp xếp theo tên
-    SortOrder = "DESC" // Theo chiều giảm dần
-};
-// Lấy danh sách từ khóa
-var category = new Category();
-category.Name = "Doan Quang Huy";
-category.Name = "Huy can ne";
-category.UrlSlug = "huy-can-ne-hi-hi";
-// Name = ".NET Core", Description = ".NET Core", UrlSlug="asp-dot-net-core", ShowOnMenu=true
-var categoryList = await blogRepo.AddOrUpdateCategory(category);
-// Xuất ra màn hình
-Console.WriteLine("{0} {1} {2}", "Name", "Description", "UrlSlug");
-Console.WriteLine("{0} {1} {2}", category.Id, category.Name, category.UrlSlug);
+////Tìm một chuyên mục (Category) theo tên định danh (slug).
+//var context = new BlogDbContext();
+//IBlogRepository blogRepo = new BlogRepository(context);
+//var pagingParams = new PagingParams
+//{
+//    PageNumber = 1, //Lấy kết quả ở trang số 1
+//    PageSize = 5, // Lấy 5 mẫu tin
+//    SortColumn = "Name", // Sắp xếp theo tên
+//    SortOrder = "DESC" // Theo chiều giảm dần
+//};
+//// Lấy danh sách từ khóa
+//var category = new Category();
+//category.Name = "Doan Quang Huy";
+//category.Name = "Huy can ne";
+//category.UrlSlug = "huy-can-ne-hi-hi";
+//// Name = ".NET Core", Description = ".NET Core", UrlSlug="asp-dot-net-core", ShowOnMenu=true
+//var categoryList = await blogRepo.AddOrUpdateCategory(category);
+//// Xuất ra màn hình
+//Console.WriteLine("{0} {1} {2}", "Name", "Description", "UrlSlug");
+//Console.WriteLine("{0} {1} {2}", category.Id, category.Name, category.UrlSlug);
 //-------------------------------------------------------------------------------------
+//// Kiểm tra tên định danh (slug) của một chuyên mục đã tồn tại hay chưa. 
+//var context = new BlogDbContext();
+//IBlogRepository blogRepo = new BlogRepository(context);
+//var pagingParams = new PagingParams
+//{
+//    PageNumber = 1, //Lấy kết quả ở trang số 1
+//    PageSize = 5, // Lấy 5 mẫu tin
+//    SortColumn = "Name", // Sắp xếp theo tên
+//    SortOrder = "DESC" // Theo chiều giảm dần
+//};
+//string UrlSlug = "net.png";
+//await blogRepo.FindSlugExistedAsync(UrlSlug);
+//-------------------------------------------------------------------------------------
+// Lấy ngẫu nhiên N bài viết. N là tham số đầu vào. 
+var context = new BlogDbContext();
+var seeder = new DataSeeder(context);
+seeder.Initialize();
+IBlogRepository blogRepo = new BlogRepository(context);
+
+int numPost = 3;
+var randomPosts = await blogRepo.GetPostRandomsAsync(numPost);
+
+foreach (var post in randomPosts)
+{
+    Console.WriteLine($"Id: {post.Id}");
+    Console.WriteLine($"Title: {post.Title}");
+    Console.WriteLine($"View Count: {post.ViewCount}");
+    Console.WriteLine($"Posted Date: {post.PostedDate}");
+    Console.WriteLine($"Author: {post.Author}");
+    Console.WriteLine($"Category: {post.Category}");
+    Console.WriteLine();
+}

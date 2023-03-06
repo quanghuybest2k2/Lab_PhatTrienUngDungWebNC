@@ -12,8 +12,8 @@ using TatBlog.Data.Contexts;
 namespace TatBlog.Data.Migrations
 {
     [DbContext(typeof(BlogDbContext))]
-    [Migration("20230222123119_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20230306134134_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -144,10 +144,10 @@ namespace TatBlog.Data.Migrations
                     b.Property<DateTime>("PostedDate")
                         .HasColumnType("datetime");
 
-                    b.Property<int>("Published")
+                    b.Property<bool>("Published")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("ShortDescription")
                         .IsRequired()

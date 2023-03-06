@@ -37,6 +37,7 @@ namespace TatBlog.Data.Mappings
                .HasDefaultValue(0);
             builder.Property(p => p.Published)
                .IsRequired()
+               .HasColumnType("bit")
                .HasDefaultValue(false);
             builder.Property(p => p.PostedDate)
               .HasColumnType("datetime");
