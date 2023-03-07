@@ -215,22 +215,22 @@ Console.OutputEncoding = Encoding.Unicode;
 //string UrlSlug = "net.png";
 //await blogRepo.FindSlugExistedAsync(UrlSlug);
 //-------------------------------------------------------------------------------------
-// Lấy ngẫu nhiên N bài viết. N là tham số đầu vào. 
-var context = new BlogDbContext();
-var seeder = new DataSeeder(context);
-seeder.Initialize();
-IBlogRepository blogRepo = new BlogRepository(context);
+//// Lấy ngẫu nhiên N bài viết. N là tham số đầu vào.
+//var context = new BlogDbContext();
+//var seeder = new DataSeeder(context);
+//seeder.Initialize();
+//IBlogRepository blogRepo = new BlogRepository(context);
 
-int numPost = 3;
-var randomPosts = await blogRepo.GetPostRandomsAsync(numPost);
+//int numPost = 3;
+//var randomPosts = await blogRepo.GetPostRandomsAsync(numPost);
 
-foreach (var post in randomPosts)
-{
-    Console.WriteLine($"Id: {post.Id}");
-    Console.WriteLine($"Title: {post.Title}");
-    Console.WriteLine($"View Count: {post.ViewCount}");
-    Console.WriteLine($"Posted Date: {post.PostedDate}");
-    Console.WriteLine($"Author: {post.Author}");
-    Console.WriteLine($"Category: {post.Category}");
-    Console.WriteLine();
-}
+//foreach (var post in randomPosts)
+//{
+//    Console.WriteLine($"Id: {post.Id}");
+//    Console.WriteLine($"Title: {post.Title}");
+//    Console.WriteLine($"View Count: {post.ViewCount}");
+//    Console.WriteLine($"Posted Date: {post.PostedDate}");
+//    Console.WriteLine($"Author: {post.Author}");
+//    Console.WriteLine($"Category: {post.Category}");
+//    Console.WriteLine();
+//}

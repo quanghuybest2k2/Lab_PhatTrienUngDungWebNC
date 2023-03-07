@@ -67,7 +67,7 @@ namespace TatBlog.Services.Blogs
         Task<IList<Post>> GetPostRandomsAsync(int numPosts, CancellationToken cancellationToken = default);
         //Tìm tất cả bài viết thỏa mãn điều kiện tìm kiếm được cho trong đối tượng
         // PostQuery(kết quả trả về kiểu IList<Post>).
-        Task<IList<Post>> FindAllPostValidCondition(PostQuery query, CancellationToken cancellationToken);
+        Task<IPagedList<Post>> GetPagedPostsByQueryAsync(IPostQuery query, IPagingParams pagingParams, CancellationToken cancellationToken = default);
         // Tìm và phân trang các bài viết thỏa mãn điều kiện tìm kiếm được cho trong
         // đối tượng PostQuery(kết quả trả về kiểu IPagedList<Post>)
         Task<IPagedList<Post>> FindAndPagination_Valid_Condition_InPostQuery(PostQuery query, IPagingParams pagingParams, CancellationToken cancellationToken);

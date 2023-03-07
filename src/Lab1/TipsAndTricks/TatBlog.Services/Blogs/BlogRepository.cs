@@ -218,9 +218,9 @@ namespace TatBlog.Services.Blogs
             {
                 postQuery = postQuery.Where(x => x.CategoryId == query.CategoryId);
             }
-            if (!string.IsNullOrWhiteSpace(query.UrlSlug))
+            if (!string.IsNullOrWhiteSpace(query.TagSlug))
             {
-                postQuery = postQuery.Where(x => x.UrlSlug == query.UrlSlug);
+                postQuery = postQuery.Where(x => x.UrlSlug == query.TagSlug);
             }
 
             return await postQuery.CountAsync(cancellationToken);
@@ -321,31 +321,42 @@ namespace TatBlog.Services.Blogs
         //Tìm tất cả bài viết thỏa mãn điều kiện tìm kiếm được cho trong đối tượng
         // PostQuery(kết quả trả về kiểu IList<Post>).
 
-        public async Task<IList<Post>> FindAllPostValidCondition(PostQuery query, CancellationToken cancellationToken)
+        public async Task<IPagedList<Post>> GetPagedPostsByQueryAsync(IPostQuery query, IPagingParams pagingParams, CancellationToken cancellationToken = default)
         {
-            IQueryable<Post> postQuery = _context.Set<Post>().Include(x => x.Tags);
-            if (query.Year > 0)
+            if (!string.IsNullOrWhiteSpace(query.Keyword))
             {
-                postQuery = postQuery.Where(x => x.PostedDate.Year == query.Year);
+                var categoryQuery = _context.Set<Post>()
+                    .Include(a => a.Author)
+                    .Include(c => c.Category)
+                    .Include(t => t.Tags)
+                    .Where(x => x.Published && (
+                        x.AuthorId == query.AuthorId ||
+                        x.CategoryId == query.CategoryId ||
+                        x.PostedDate.Year == query.Year ||
+                        x.PostedDate.Month == query.Month ||
+                        (!string.IsNullOrWhiteSpace(query.CategorySlug) &&
+                            x.Category.UrlSlug.Contains(query.CategorySlug)) ||
+                        (!string.IsNullOrWhiteSpace(query.AuthorSlug) &&
+                            x.Author.UrlSlug.Contains(query.AuthorSlug)) ||
+                        (!string.IsNullOrWhiteSpace(query.TagSlug) &&
+                            x.Tags.Any(t => t.UrlSlug.Contains(query.TagSlug))) ||
+                        (!string.IsNullOrWhiteSpace(query.Keyword) &&
+                            x.Title.ToLower().Contains(query.Keyword.ToLower())) ||
+                        (!string.IsNullOrWhiteSpace(query.Keyword) &&
+                            x.ShortDescription.ToLower().Contains(query.Keyword.ToLower())) ||
+                        (!string.IsNullOrWhiteSpace(query.Keyword) &&
+                            x.Description.ToLower().Contains(query.Keyword.ToLower()))));
+                return await categoryQuery.ToPagedListAsync(pagingParams, cancellationToken);
             }
-            if (query.Month > 0)
+            else
             {
-                postQuery = postQuery.Where(x => x.PostedDate.Month == query.Month);
+                var categoryQuery = _context.Set<Post>()
+                    .Include(a => a.Author)
+                    .Include(c => c.Category)
+                    .Include(t => t.Tags)
+                    .Where(x => x.Published);
+                return await categoryQuery.ToPagedListAsync(pagingParams, cancellationToken);
             }
-            if (query.AuthorId > 0)
-            {
-                postQuery = postQuery.Where(x => x.AuthorId == query.AuthorId);
-            }
-            if (query.CategoryId > 0)
-            {
-                postQuery = postQuery.Where(x => x.CategoryId == query.CategoryId);
-            }
-            if (!string.IsNullOrWhiteSpace(query.UrlSlug))
-            {
-                postQuery = postQuery.Where(x => x.UrlSlug == query.UrlSlug);
-            }
-
-            return await postQuery.ToListAsync(cancellationToken);
         }
         // Tìm và phân trang các bài viết thỏa mãn điều kiện tìm kiếm được cho trong
         // đối tượng PostQuery(kết quả trả về kiểu IPagedList<Post>)
@@ -368,9 +379,9 @@ namespace TatBlog.Services.Blogs
             {
                 postQuery = postQuery.Where(x => x.CategoryId == query.CategoryId);
             }
-            if (!string.IsNullOrWhiteSpace(query.UrlSlug))
+            if (!string.IsNullOrWhiteSpace(query.TagSlug))
             {
-                postQuery = postQuery.Where(x => x.UrlSlug == query.UrlSlug);
+                postQuery = postQuery.Where(x => x.UrlSlug == query.TagSlug);
             }
             return await postQuery.ToPagedListAsync(pagingParams, cancellationToken);
         }
