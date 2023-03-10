@@ -1,0 +1,27 @@
+﻿@model IPagedList<Post>
+
+@{
+    ViewData["Title"] = "Tác giả";
+
+    var author = new Author();
+    if (Model != null && Model.Count > 0)
+    {
+        author = (Model[0].Author as Author);
+    }
+}
+
+<div class="p-4">
+    @if (!string.IsNullOrWhiteSpace(author.FullName))
+    {
+        <h3 class="text-primary mb-3">
+            Những bài viết thuộc tác giả '@author.FullName'
+        </h3>
+    }
+
+    @foreach (var postItem in Model)
+    {
+        <partial name="_PostItem" model="postItem" />
+    }
+
+    <partial name="_Pager" model="@Model" />
+</div>

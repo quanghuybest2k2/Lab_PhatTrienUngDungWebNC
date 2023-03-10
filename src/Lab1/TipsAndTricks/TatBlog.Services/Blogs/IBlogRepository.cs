@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -69,10 +70,29 @@ namespace TatBlog.Services.Blogs
         // PostQuery(kết quả trả về kiểu IList<Post>).
         Task<IPagedList<Post>> GetPagedPostsByQueryAsync(IPostQuery query, IPagingParams pagingParams, CancellationToken cancellationToken = default);
         // Tìm và phân trang các bài viết thỏa mãn điều kiện tìm kiếm được cho trong
-        // đối tượng PostQuery(kết quả trả về kiểu IPagedList<Post>)
-        Task<IPagedList<Post>> FindAndPagination_Valid_Condition_InPostQuery(PostQuery query, IPagingParams pagingParams, CancellationToken cancellationToken);
-        // Đếm số lượng bài viết thỏa mãn điều kiện tìm kiếm được cho trong đối
+        // đối tượng PostQuery(kết quả trả về kiểu IPagedList<Post>) // Đếm số lượng bài viết thỏa mãn điều kiện tìm kiếm được cho trong đối
         // tượng PostQuery.
-
+        //IQueryable<Post> FilterPost(PostQuery pq);
+        IQueryable<Post> FilterPosts(PostQuery condition);
+        Task<IPagedList<Post>> GetPagedPostsAsync(
+        PostQuery condition,
+        int pageNumber = 1,
+        int pageSize = 10,
+       CancellationToken cancellationToken = default);
+        //để hiển thị danh sách bài viết được đăng
+        //trong tháng và năm đã chọn(do người dùng click chuột vào các tháng
+        //trong view component Archives ở bài tập 3). 
+        Task<IList<Post>> GetPostsAsync(
+        PostQuery condition,
+        int pageNumber,
+        int pageSize,
+        CancellationToken cancellationToken = default);
+        // Hiển thị TOP 5 bài viết ngẫu nhiên. Người dùng có thể click  chuột để xem chi tiết.
+        Task<IList<Post>> GetRandomArticlesAsync(
+        int numPosts, CancellationToken cancellationToken = default);
+        // top 4 authors has article
+        Task<IList<Author>> GetPopularAuthorsAsync(int numAuthor, CancellationToken cancellationToken = default);
+        // dem theo 12 thang gan nhat
+        Task<IList<MonthlyPostCountItem>> CountMonthlyPostsAsync(int numMonths, CancellationToken cancellationToken = default);
     }
 }

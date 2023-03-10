@@ -23,13 +23,25 @@
                             Tác giả:
                         </small>
                         <span class="text-primary">
-                            @Model.Author.FullName
+                           <a asp-controller="Blog"
+                               asp-action="Author"
+                               asp-route-slug="@Model.Author.UrlSlug"
+                               class="text-decoration-none"
+                               title="@Model.Title">
+                                @Model.Author.FullName
+                           </a>
                         </span>
                         <small class="text-muted">
                             Chủ đề
                         </small>
                         <span class="text-primary">
-                            @Model.Category.Name
+                            <a asp-controller="Blog"
+                               asp-action="Category"
+                               asp-route-slug="@Model.Category.UrlSlug"
+                               class="text-decoration-none"
+                               title="@Model.Category.Description">
+                                @Model.Category.Name
+                            </a>
                         </span>
                     </p>
                     <p class="card-text">

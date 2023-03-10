@@ -1,0 +1,21 @@
+﻿@using TatBlog.Services.Blogs;
+@model IPagedList<Post>
+
+@{
+    ViewData["Title"] = "Danh sách bài viết";
+
+    var postQuery = (ViewData["PostQuery"] as PostQuery) ?? new PostQuery();
+}
+
+<div class="p-4">
+    <h3 class="text-primary mb-3">
+        Những bài viết trong tháng @postQuery.Month năm @postQuery.Year
+    </h3>
+
+    @foreach (var postItem in Model)
+    {
+        <partial name="_PostItem" model="postItem" />
+    }
+
+    <partial name="_Pager" model="@Model" />
+</div>

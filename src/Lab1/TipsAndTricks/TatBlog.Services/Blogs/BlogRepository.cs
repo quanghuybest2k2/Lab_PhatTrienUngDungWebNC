@@ -360,33 +360,134 @@ namespace TatBlog.Services.Blogs
         }
         // Tìm và phân trang các bài viết thỏa mãn điều kiện tìm kiếm được cho trong
         // đối tượng PostQuery(kết quả trả về kiểu IPagedList<Post>)
-        public async Task<IPagedList<Post>> FindAndPagination_Valid_Condition_InPostQuery(PostQuery query, IPagingParams pagingParams, CancellationToken cancellationToken)
+        //
+        public async Task<IPagedList<Post>> GetPagedPostsAsync(
+        PostQuery condition,
+        int pageNumber = 1,
+        int pageSize = 10,
+        CancellationToken cancellationToken = default)
         {
-            IQueryable<Post> postQuery = _context.Set<Post>().Include(x => x.Tags);
-            if (query.Year > 0)
-            {
-                postQuery = postQuery.Where(x => x.PostedDate.Year == query.Year);
-            }
-            if (query.Month > 0)
-            {
-                postQuery = postQuery.Where(x => x.PostedDate.Month == query.Month);
-            }
-            if (query.AuthorId > 0)
-            {
-                postQuery = postQuery.Where(x => x.AuthorId == query.AuthorId);
-            }
-            if (query.CategoryId > 0)
-            {
-                postQuery = postQuery.Where(x => x.CategoryId == query.CategoryId);
-            }
-            if (!string.IsNullOrWhiteSpace(query.TagSlug))
-            {
-                postQuery = postQuery.Where(x => x.UrlSlug == query.TagSlug);
-            }
-            return await postQuery.ToPagedListAsync(pagingParams, cancellationToken);
+            return await FilterPosts(condition).ToPagedListAsync(
+                pageNumber, pageSize,
+                nameof(Post.PostedDate), "DESC",
+                cancellationToken);
         }
-        // Đếm số lượng bài viết thỏa mãn điều kiện tìm kiếm được cho trong đối
-        // tượng PostQuery.
+        // lọc bài viết
+        public IQueryable<Post> FilterPosts(PostQuery condition)
+        {
+            IQueryable<Post> posts = _context.Set<Post>()
+            .Include(x => x.Category)
+            .Include(x => x.Author)
+            .Include(x => x.Tags);
 
+            if (condition.PublishedOnly)
+            {
+                posts = posts.Where(x => x.Published);
+            }
+
+            if (condition.NotPublished)
+            {
+                posts = posts.Where(x => !x.Published);
+            }
+
+            if (condition.CategoryId > 0)
+            {
+                posts = posts.Where(x => x.CategoryId == condition.CategoryId);
+            }
+
+            if (!string.IsNullOrWhiteSpace(condition.CategorySlug))
+            {
+                posts = posts.Where(x => x.Category.UrlSlug == condition.CategorySlug);
+            }
+
+            if (condition.AuthorId > 0)
+            {
+                posts = posts.Where(x => x.AuthorId == condition.AuthorId);
+            }
+
+            if (!string.IsNullOrWhiteSpace(condition.AuthorSlug))
+            {
+                posts = posts.Where(x => x.Author.UrlSlug == condition.AuthorSlug);
+            }
+
+            if (!string.IsNullOrWhiteSpace(condition.TagSlug))
+            {
+                posts = posts.Where(x => x.Tags.Any(t => t.UrlSlug == condition.TagSlug));
+            }
+
+            if (!string.IsNullOrWhiteSpace(condition.Keyword))
+            {
+                posts = posts.Where(x => x.Title.Contains(condition.Keyword) ||
+                                         x.ShortDescription.Contains(condition.Keyword) ||
+                                         x.Description.Contains(condition.Keyword) ||
+                                         x.Category.Name.Contains(condition.Keyword) ||
+                                         x.Tags.Any(t => t.Name.Contains(condition.Keyword)));
+            }
+
+            if (condition.Year > 0)
+            {
+                posts = posts.Where(x => x.PostedDate.Year == condition.Year);
+            }
+
+            if (condition.Month > 0)
+            {
+                posts = posts.Where(x => x.PostedDate.Month == condition.Month);
+            }
+
+            if (!string.IsNullOrWhiteSpace(condition.TitleSlug))
+            {
+                posts = posts.Where(x => x.UrlSlug == condition.TitleSlug);
+            }
+
+            return posts;
+        }
+        //để hiển thị danh sách bài viết được đăng
+        //trong tháng và năm đã chọn(do người dùng click chuột vào các tháng
+        //trong view component Archives ở bài tập 3). 
+        public async Task<IList<Post>> GetPostsAsync(
+        PostQuery condition,
+        int pageNumber,
+        int pageSize,
+        CancellationToken cancellationToken = default)
+        {
+            return await FilterPosts(condition)
+                .OrderByDescending(x => x.PostedDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken: cancellationToken);
+        }
+        // Hiển thị TOP 5 bài viết ngẫu nhiên. Người dùng có thể click  chuột để xem chi tiết.
+        public async Task<IList<Post>> GetRandomArticlesAsync(
+        int numPosts, CancellationToken cancellationToken = default)
+        {
+            return await _context.Set<Post>()
+                .OrderBy(x => Guid.NewGuid())
+                .Take(numPosts)
+                .ToListAsync(cancellationToken);
+        }
+        // top n tac gia co nhieu bai viet nhat
+        public async Task<IList<Author>> GetPopularAuthorsAsync(int numAuthor, CancellationToken cancellationToken = default)
+        {
+            return await _context.Set<Author>()
+                .OrderByDescending(p => p.Posts)
+                .Take(numAuthor)
+                .ToListAsync(cancellationToken);
+        }
+        // dem thang ngay bai viet
+        public async Task<IList<MonthlyPostCountItem>> CountMonthlyPostsAsync(int numMonths, CancellationToken cancellationToken = default)
+        {
+            return await _context.Set<Post>()
+                .Where(x => x.Published)
+                .GroupBy(x => new { x.PostedDate.Year, x.PostedDate.Month })
+                .Select(g => new MonthlyPostCountItem()
+                {
+                    Year = g.Key.Year,
+                    Month = g.Key.Month,
+                    PostCount = g.Count(x => x.Published)
+                })
+                .OrderByDescending(x => x.Year)
+                .ThenByDescending(x => x.Month)
+                .ToListAsync(cancellationToken);
+        }
     }
 }
