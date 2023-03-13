@@ -3201,11 +3201,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab1\\TipsAndTricks\\TatBlog.Data\\TatBlog.Data.csproj",
+      "projectUniqueName": "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab\\TipsAndTricks\\TatBlog.Data\\TatBlog.Data.csproj",
       "projectName": "TatBlog.Data",
-      "projectPath": "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab1\\TipsAndTricks\\TatBlog.Data\\TatBlog.Data.csproj",
+      "projectPath": "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab\\TipsAndTricks\\TatBlog.Data\\TatBlog.Data.csproj",
       "packagesPath": "C:\\Users\\Doan Quang Huy\\.nuget\\packages\\",
-      "outputPath": "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab1\\TipsAndTricks\\TatBlog.Data\\obj\\",
+      "outputPath": "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab\\TipsAndTricks\\TatBlog.Data\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Doan Quang Huy\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -3222,8 +3222,8 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab1\\TipsAndTricks\\TatBlog.Core\\TatBlog.Core.csproj": {
-              "projectPath": "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab1\\TipsAndTricks\\TatBlog.Core\\TatBlog.Core.csproj"
+            "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab\\TipsAndTricks\\TatBlog.Core\\TatBlog.Core.csproj": {
+              "projectPath": "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab\\TipsAndTricks\\TatBlog.Core\\TatBlog.Core.csproj"
             }
           }
         }

@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TatBlog.Data.Contexts;
 using TatBlog.Data.Seeders;
 using TatBlog.Services.Blogs;
@@ -15,5 +15,5 @@ var app = builder.Build();
     app.UseBlogRoutes();
     app.UseDataSeeder();
 }
-
+// trang số 8, đừng thêm dấu chấm hỏi
 app.Run();
