@@ -94,5 +94,9 @@ namespace TatBlog.Services.Blogs
         Task<IList<Author>> GetPopularAuthorsAsync(int numAuthor, CancellationToken cancellationToken = default);
         // dem theo 12 thang gan nhat
         Task<IList<MonthlyPostCountItem>> CountMonthlyPostsAsync(int numMonths, CancellationToken cancellationToken = default);
+        //
+        Task<Author> GetAuthorAsync(string slug, CancellationToken cancellationToken = default);
+        //
+        Task<IList<AuthorItem>> GetAuthorsAsync(CancellationToken cancellationToken = default);
     }
 }

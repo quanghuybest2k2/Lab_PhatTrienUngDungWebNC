@@ -3289,11 +3289,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab1\\TipsAndTricks\\TatBlog.Services\\TatBlog.Services.csproj",
+      "projectUniqueName": "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab\\TipsAndTricks\\TatBlog.Services\\TatBlog.Services.csproj",
       "projectName": "TatBlog.Services",
-      "projectPath": "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab1\\TipsAndTricks\\TatBlog.Services\\TatBlog.Services.csproj",
+      "projectPath": "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab\\TipsAndTricks\\TatBlog.Services\\TatBlog.Services.csproj",
       "packagesPath": "C:\\Users\\Doan Quang Huy\\.nuget\\packages\\",
-      "outputPath": "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab1\\TipsAndTricks\\TatBlog.Services\\obj\\",
+      "outputPath": "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab\\TipsAndTricks\\TatBlog.Services\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Doan Quang Huy\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -3310,11 +3310,11 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab1\\TipsAndTricks\\TatBlog.Core\\TatBlog.Core.csproj": {
-              "projectPath": "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab1\\TipsAndTricks\\TatBlog.Core\\TatBlog.Core.csproj"
+            "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab\\TipsAndTricks\\TatBlog.Core\\TatBlog.Core.csproj": {
+              "projectPath": "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab\\TipsAndTricks\\TatBlog.Core\\TatBlog.Core.csproj"
             },
-            "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab1\\TipsAndTricks\\TatBlog.Data\\TatBlog.Data.csproj": {
-              "projectPath": "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab1\\TipsAndTricks\\TatBlog.Data\\TatBlog.Data.csproj"
+            "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab\\TipsAndTricks\\TatBlog.Data\\TatBlog.Data.csproj": {
+              "projectPath": "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab\\TipsAndTricks\\TatBlog.Data\\TatBlog.Data.csproj"
             }
           }
         }
