@@ -1,0 +1,43 @@
+﻿@model Post
+
+@{
+    ViewData["Title"] = "Chi tiết bài viết";
+}
+
+<div class="text-danger">@Html.ValidationMessage("denied access")</div>
+
+<div class="p-4">
+    <h1>Tiêu đề: @Model.Title</h1>
+    <p>Ngày tạo: <i>@Html.DisplayFor(model => model.PostedDate)</i></p>
+    <hr>
+    <p>
+        <h5>
+            Giới thiệu bài viết:
+        </h5>
+        @Html.Raw(Model.ShortDescription)
+    </p>
+    <p>
+        <h5>
+            Mô tả bài viết:
+        </h5>
+        @Html.Raw(Model.Description)
+    </p>
+    <h6>
+        Lượt xem: <text class="text-primary">@Model.ViewCount</text>
+    </h6>
+    <h6>
+        Tác giả: <text class="text-primary">@Model.Author.FullName</text>
+    </h6>
+    <h6>
+        Chủ đề: <text class="text-primary">@Model.Category.Name</text>
+    </h6>
+    <figure>
+        Thẻ:
+        @foreach (var tag in Model.Tags)
+        {
+            <h6>
+                <text class="text-primary">@tag.Name</text>
+            </h6>
+        }
+    </figure>
+</div>

@@ -1,0 +1,22 @@
+﻿@using TatBlog.WebApp.Controllers;
+@model NewsletterController
+
+<div class="mb-4">
+    <h3 class="text-success mb-2">
+        Đăng ký nhận thông báo khi có bài viết mới
+    </h3>
+
+    <div class="row">
+        <section>
+            <form method="post">
+                <div asp-validation-summary="All" class="text-danger" role="alert"></div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Email" class="form-control" autocomplete="username" aria-required="true" />
+                    <label asp-for="Email">Email</label>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn btn-primary">Đăng ký</button>
+            </form>
+        </section>
+    </div>
+</div>
