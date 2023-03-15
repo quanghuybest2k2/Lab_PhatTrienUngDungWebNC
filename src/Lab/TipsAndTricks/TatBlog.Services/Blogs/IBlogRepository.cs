@@ -98,5 +98,11 @@ namespace TatBlog.Services.Blogs
         Task<Author> GetAuthorAsync(string slug, CancellationToken cancellationToken = default);
         //
         Task<IList<AuthorItem>> GetAuthorsAsync(CancellationToken cancellationToken = default);
+        //
+        Task<Post> GetPostByIdAsync(int postId, bool includeDetails = false, CancellationToken cancellationToken = default);
+        //
+        Task<Tag> GetTagAsync(string slug, CancellationToken cancellationToken = default);
+        //
+        Task<Post> CreateOrUpdatePostAsync(Post post, IEnumerable<string> tags, CancellationToken cancellationToken = default);
     }
 }
