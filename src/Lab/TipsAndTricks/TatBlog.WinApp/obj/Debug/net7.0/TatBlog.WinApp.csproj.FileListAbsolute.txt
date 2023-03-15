@@ -297,3 +297,4 @@ D:\Phát triển ứng dụng web nâng cao\Lab_PhatTrienUngDungWebNC\src\Lab\Ti
 D:\Phát triển ứng dụng web nâng cao\Lab_PhatTrienUngDungWebNC\src\Lab\TipsAndTricks\TatBlog.WinApp\obj\Debug\net7.0\TatBlog.WinApp.pdb
 D:\Phát triển ứng dụng web nâng cao\Lab_PhatTrienUngDungWebNC\src\Lab\TipsAndTricks\TatBlog.WinApp\obj\Debug\net7.0\TatBlog.WinApp.genruntimeconfig.cache
 D:\Phát triển ứng dụng web nâng cao\Lab_PhatTrienUngDungWebNC\src\Lab\TipsAndTricks\TatBlog.WinApp\obj\Debug\net7.0\ref\TatBlog.WinApp.dll
+D:\Phát triển ứng dụng web nâng cao\Lab_PhatTrienUngDungWebNC\src\Lab\TipsAndTricks\TatBlog.WinApp\bin\Debug\net7.0\SlugGenerator.dll

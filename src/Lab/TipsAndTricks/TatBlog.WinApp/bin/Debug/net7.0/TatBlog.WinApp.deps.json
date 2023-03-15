@@ -446,6 +446,14 @@
           }
         }
       },
+      "SlugGenerator/2.0.2": {
+        "runtime": {
+          "lib/netcoreapp2.0/SlugGenerator.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
       "System.Buffers/4.5.1": {},
       "System.CodeDom/4.4.0": {
         "runtime": {
@@ -696,6 +704,7 @@
       },
       "TatBlog.Services/1.0.0": {
         "dependencies": {
+          "SlugGenerator": "2.0.2",
           "System.Linq.Dynamic.Core": "1.2.25",
           "TatBlog.Core": "1.0.0",
           "TatBlog.Data": "1.0.0"
@@ -977,6 +986,13 @@
       "sha512": "sha512-KZYeKBET/2Z0gY1WlTAK7+RHTl7GSbtvTLDXEZZojUdAPqpQNDL6tHv7VUpqfX5VEOh+uRGKaZXkuD253nEOBQ==",
       "path": "mono.texttemplating/2.2.1",
       "hashPath": "mono.texttemplating.2.2.1.nupkg.sha512"
+    },
+    "SlugGenerator/2.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-YnZfqVSdEaD+Ulif5GihlnrQjhSKpA4iDxC+S8i344w90IkBWjGDqYBRbl4aO47kXIDoFyUvWJWzvWNO6LLhXw==",
+      "path": "sluggenerator/2.0.2",
+      "hashPath": "sluggenerator.2.0.2.nupkg.sha512"
     },
     "System.Buffers/4.5.1": {
       "type": "package",

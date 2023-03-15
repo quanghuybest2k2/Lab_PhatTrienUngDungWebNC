@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "D6VTg/cpiLRs1hVlfjUyeF54TGJJ6nx4U+ihtF+SEg5IpeNibr5zeZlKVZ63kpWHfurLNed8nP62AvL+ZzQO+Q==",
+  "dgSpecHash": "+u3FXO3MlmE6045orsPScQ/ndLKFu6XXDWvXRIijgpucockWA2hR8X3gNYpPz6JSLzViTI9w5QzRlWt1SGZCww==",
   "success": true,
   "projectFilePath": "D:\\Phát triển ứng dụng web nâng cao\\Lab_PhatTrienUngDungWebNC\\src\\Lab\\TipsAndTricks\\TatBlog.Services\\TatBlog.Services.csproj",
   "expectedPackageFiles": [
@@ -37,6 +37,7 @@
     "C:\\Users\\Doan Quang Huy\\.nuget\\packages\\microsoft.sqlserver.server\\1.0.0\\microsoft.sqlserver.server.1.0.0.nupkg.sha512",
     "C:\\Users\\Doan Quang Huy\\.nuget\\packages\\microsoft.win32.registry\\5.0.0\\microsoft.win32.registry.5.0.0.nupkg.sha512",
     "C:\\Users\\Doan Quang Huy\\.nuget\\packages\\microsoft.win32.systemevents\\5.0.0\\microsoft.win32.systemevents.5.0.0.nupkg.sha512",
+    "C:\\Users\\Doan Quang Huy\\.nuget\\packages\\sluggenerator\\2.0.2\\sluggenerator.2.0.2.nupkg.sha512",
     "C:\\Users\\Doan Quang Huy\\.nuget\\packages\\system.buffers\\4.5.1\\system.buffers.4.5.1.nupkg.sha512",
     "C:\\Users\\Doan Quang Huy\\.nuget\\packages\\system.configuration.configurationmanager\\5.0.0\\system.configuration.configurationmanager.5.0.0.nupkg.sha512",
     "C:\\Users\\Doan Quang Huy\\.nuget\\packages\\system.diagnostics.diagnosticsource\\5.0.0\\system.diagnostics.diagnosticsource.5.0.0.nupkg.sha512",

@@ -351,3 +351,14 @@ D:\Phát triển ứng dụng web nâng cao\Lab_PhatTrienUngDungWebNC\src\Lab\Ti
 D:\Phát triển ứng dụng web nâng cao\Lab_PhatTrienUngDungWebNC\src\Lab\TipsAndTricks\TatBlog.WebApp\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
 D:\Phát triển ứng dụng web nâng cao\Lab_PhatTrienUngDungWebNC\src\Lab\TipsAndTricks\TatBlog.WebApp\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 D:\Phát triển ứng dụng web nâng cao\Lab_PhatTrienUngDungWebNC\src\Lab\TipsAndTricks\TatBlog.WebApp\bin\Debug\net7.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
+D:\Phát triển ứng dụng web nâng cao\Lab_PhatTrienUngDungWebNC\src\Lab\TipsAndTricks\TatBlog.WebApp\bin\Debug\net7.0\Mapster.dll
+D:\Phát triển ứng dụng web nâng cao\Lab_PhatTrienUngDungWebNC\src\Lab\TipsAndTricks\TatBlog.WebApp\bin\Debug\net7.0\Mapster.DependencyInjection.dll
+D:\Phát triển ứng dụng web nâng cao\Lab_PhatTrienUngDungWebNC\src\Lab\TipsAndTricks\TatBlog.WebApp\bin\Debug\net7.0\SlugGenerator.dll
+D:\Phát triển ứng dụng web nâng cao\Lab_PhatTrienUngDungWebNC\src\Lab\TipsAndTricks\TatBlog.WebApp\bin\Debug\net7.0\nlog.config
+D:\Phát triển ứng dụng web nâng cao\Lab_PhatTrienUngDungWebNC\src\Lab\TipsAndTricks\TatBlog.WebApp\bin\Debug\net7.0\FluentValidation.dll
+D:\Phát triển ứng dụng web nâng cao\Lab_PhatTrienUngDungWebNC\src\Lab\TipsAndTricks\TatBlog.WebApp\bin\Debug\net7.0\FluentValidation.AspNetCore.dll
+D:\Phát triển ứng dụng web nâng cao\Lab_PhatTrienUngDungWebNC\src\Lab\TipsAndTricks\TatBlog.WebApp\bin\Debug\net7.0\FluentValidation.DependencyInjectionExtensions.dll
+D:\Phát triển ứng dụng web nâng cao\Lab_PhatTrienUngDungWebNC\src\Lab\TipsAndTricks\TatBlog.WebApp\bin\Debug\net7.0\NLog.dll
+D:\Phát triển ứng dụng web nâng cao\Lab_PhatTrienUngDungWebNC\src\Lab\TipsAndTricks\TatBlog.WebApp\bin\Debug\net7.0\NLog.Extensions.Logging.dll
+D:\Phát triển ứng dụng web nâng cao\Lab_PhatTrienUngDungWebNC\src\Lab\TipsAndTricks\TatBlog.WebApp\bin\Debug\net7.0\NLog.Web.AspNetCore.dll
+D:\Phát triển ứng dụng web nâng cao\Lab_PhatTrienUngDungWebNC\src\Lab\TipsAndTricks\TatBlog.WebApp\obj\Debug\net7.0\TatBlog.WebApp.MvcApplicationPartsAssemblyInfo.cs
