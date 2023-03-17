@@ -84,20 +84,20 @@ namespace TatBlog.Services.Blogs
                 .AnyAsync(x => x.Id != postId && x.UrlSlug == slug, cancellationToken);
         }
         // Lấy danh sách từ khóa,thẻ và phân trang theo các tham số pagingParams
-        public async Task<IPagedList<TagItem>> GetPagedTagsAsync(IPagingParams pagingParams, CancellationToken cancellationToken = default)
-        {
-            var tagQuery = _context.Set<Tag>()
-                .Select(x => new TagItem()
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    UrlSlug = x.UrlSlug,
-                    Description = x.Description,
-                    PostCount = x.Posts.Count(p => p.Published)
-                });
-            return await tagQuery
-                .ToPagedListAsync(pagingParams, cancellationToken);
-        }
+        //public async Task<IPagedList<TagItem>> GetPagedTagsAsync(IPagingParams pagingParams, CancellationToken cancellationToken = default)
+        //{
+        //    var tagQuery = _context.Set<Tag>()
+        //        .Select(x => new TagItem()
+        //        {
+        //            Id = x.Id,
+        //            Name = x.Name,
+        //            UrlSlug = x.UrlSlug,
+        //            Description = x.Description,
+        //            PostCount = x.Posts.Count(p => p.Published)
+        //        });
+        //    return await tagQuery
+        //        .ToPagedListAsync(pagingParams, cancellationToken);
+        //}
         // Tìm một thẻ (Tag) theo tên định danh (slug)
         public async Task<Tag> GetTagBySlugAsync(string slug, CancellationToken cancellationToken = default)
         {
@@ -595,6 +595,114 @@ namespace TatBlog.Services.Blogs
 
             return post;
         }
+        // Xóa một bài viết theo Id truyền vào
+        public async Task<bool> DeletePostById(int id, CancellationToken cancellationToken = default)
+        {
+            return await _context.Set<Post>()
+                .Where(x => x.Id == id)
+                .ExecuteDeleteAsync(cancellationToken) > 0;
+        }
+        // change status
+        public async Task ChangeStatusPushed(int id, CancellationToken cancellationToken = default)
+        {
+            await _context.Set<Post>()
+                .Where(x => x.Id == id)
+                .ExecuteUpdateAsync(p => p.SetProperty(x => x.Published, x => !x.Published), cancellationToken);
+        }
         //
+        public async Task<IPagedList<CategoryItem>> GetPagedCategoriesAsync(
+            IPagingParams pagingParams,
+            CancellationToken cancellationToken = default)
+        {
+            var tagQuery = _context.Set<Category>()
+                .Select(x => new CategoryItem()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    UrlSlug = x.UrlSlug,
+                    Description = x.Description,
+                    ShowOnMenu = x.ShowOnMenu,
+                    PostCount = x.Posts.Count(p => p.Published)
+                });
+
+            return await tagQuery.ToPagedListAsync(pagingParams, cancellationToken);
+        }
+        //
+        public async Task<bool> DeleteCategoryAsync(
+            int categoryId, CancellationToken cancellationToken = default)
+        {
+            var category = await _context.Set<Category>().FindAsync(categoryId);
+
+            if (category is null) return false;
+
+            _context.Set<Category>().Remove(category);
+            var rowsCount = await _context.SaveChangesAsync(cancellationToken);
+
+            return rowsCount > 0;
+        }
+        //
+        public async Task<Category> EditCategoryAsync(Category cat, CancellationToken cancellationToken = default)
+        {
+            var category = await _context.Set<Category>()
+                .Include(p => p.Posts)
+                .AnyAsync(x => x.Id == cat.Id, cancellationToken);
+            if (category)
+                _context.Entry(cat).State = EntityState.Modified;
+            else
+                await _context.Categories.AddAsync(cat, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return cat;
+        }
+        //
+        public async Task<Tag> GetTagByIdAsync(int tagId)
+        {
+            return await _context.Set<Tag>().FindAsync(tagId);
+        }
+        //
+        public async Task<bool> DeleteTagAsync(
+            int tagId, CancellationToken cancellationToken = default)
+        {
+            //var tag = await _context.Set<Tag>().FindAsync(tagId);
+
+            //if (tag == null) return false;
+
+            //_context.Set<Tag>().Remove(tag);
+            //return await _context.SaveChangesAsync(cancellationToken) > 0;
+
+            return await _context.Set<Tag>()
+                .Where(x => x.Id == tagId)
+                .ExecuteDeleteAsync(cancellationToken) > 0;
+        }
+        public async Task<IPagedList<TagItem>> GetPagedTagsAsync(
+        IPagingParams pagingParams, CancellationToken cancellationToken = default)
+        {
+            var tagQuery = _context.Set<Tag>()
+                .OrderBy(x => x.Name)
+                .Select(x => new TagItem()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    UrlSlug = x.UrlSlug,
+                    Description = x.Description,
+                    PostCount = x.Posts.Count(p => p.Published)
+                });
+
+            return await tagQuery.ToPagedListAsync(pagingParams, cancellationToken);
+        }
+        //
+        public async Task<Tag> EditTagAsync(Tag newTag, CancellationToken cancellationToken = default)
+        {
+            var tag = await _context.Set<Tag>()
+                .Include(p => p.Posts)
+                .AnyAsync(x => x.Id == newTag.Id, cancellationToken);
+            if (tag)
+                _context.Entry(newTag).State = EntityState.Modified;
+            else
+                await _context.Tags.AddAsync(newTag, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return newTag;
+        }
     }
 }

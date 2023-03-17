@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel;
 using System.Globalization;
-using System.Numerics;
 
 namespace TatBlog.WebApp.Areas.Admin.Models
 {
@@ -18,6 +16,8 @@ namespace TatBlog.WebApp.Areas.Admin.Models
         public int Year { get; set; }
         [DisplayName("Tháng")]
         public int Month { get; set; }
+        [DisplayName("Chưa xuất bản")]
+        public bool UnPublished { get; set; }
         public IEnumerable<SelectListItem> AuthorList { get; set; }
         public IEnumerable<SelectListItem> CategoryList { get; set; }
         public IEnumerable<SelectListItem> MonthList { get; set; }
