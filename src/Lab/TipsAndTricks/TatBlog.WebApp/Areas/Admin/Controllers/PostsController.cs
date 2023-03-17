@@ -87,7 +87,7 @@ namespace TatBlog.WebApp.Areas.Admin.Controllers
             return View(model);
         }
         [HttpPost]
-        public async Task<IActionResult> Edit(IValidator<PostEditModel> postValidator, PostEditModel model)
+        public async Task<IActionResult> Edit([FromServices] IValidator<PostEditModel> postValidator, PostEditModel model)
         {
             var validationResult = await postValidator.ValidateAsync(model);
             if (!validationResult.IsValid)
@@ -141,6 +141,19 @@ namespace TatBlog.WebApp.Areas.Admin.Controllers
             return slugExisted
                 ? Json($"Slug '{urlSlug}' đã được sử dụng")
                 : Json(true);
+        }
+        //[HttpDelete]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _blogRepository.DeletePostById(id);
+
+            return RedirectToAction("Index");
+        }
+        public async Task<IActionResult> ChangePublished(int id)
+        {
+            await _blogRepository.ChangeStatusPushed(id);
+
+            return RedirectToAction("Index");
         }
     }
 }

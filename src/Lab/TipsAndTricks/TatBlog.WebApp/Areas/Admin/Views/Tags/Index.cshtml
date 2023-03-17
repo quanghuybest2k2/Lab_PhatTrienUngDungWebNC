@@ -1,6 +1,68 @@
-﻿@{
-    ViewData["PageTitle"] = "Danh sách các thẻ";
+﻿@using TatBlog.Core.Contracts;
+@using TatBlog.Core.DTO;
+@using TatBlog.Core.Entities;
+@model TatBlog.WebApp.Areas.Admin.Models.TagFilterModel
+
+@{
+    ViewData["PageTitle"] = "Quản lý thẻ";
+    var tagsList = ViewBag.TagsList as IPagedList<TagItem>;
 }
+
 <h1>
-    Danh sách các thẻ
+    Danh sách thẻ
 </h1>
+
+<partial name="_TagFilterPane" model=@Model />
+
+@if (tagsList != null && tagsList.Count > 0)
+{
+    <table class="table table-responsive table-striped">
+        <thead>
+            <tr class="row">
+                <th class="col-5">Thẻ</th>
+                <th class="col-5">Mô tả</th>
+                <th class="col-1">Số lượng bài viết</th>
+                <th class="col-1">Xóa</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tag in tagsList)
+            {
+                <tr class="row">
+                    <td class="col-5">
+                        <a asp-area="Admin"
+                   asp-controller="Tags"
+                   asp-action="Edit"
+                   asp-route-id="@tag.Id"
+                   class="text-bold">
+                            @tag.Name
+                        </a>
+                    </td>
+                    <td class="col-5">
+                        @tag.Description
+                    </td>
+                    <td class="col-1">
+                        @tag.PostCount
+                    </td>
+                    <td class="col-1">
+                        <a asp-area="Admin"
+                   asp-controller="Tags"
+                   asp-action="DeleteTag"
+                   asp-route-id=@tag.Id
+                   onclick="return confirm('Bạn có thực sự muốn xóa thẻ này không?')"
+                   class="text-danger">
+                            Xóa
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <partial name="_PaginatePage" model=@tagsList />
+}
+else
+{
+    <h1 class="text-danger">
+        Không tìm thấy thẻ nào
+    </h1>
+}

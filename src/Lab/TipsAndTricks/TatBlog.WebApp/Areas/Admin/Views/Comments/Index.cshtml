@@ -1,6 +1,88 @@
-﻿@{
-    ViewData["PageTitle"] = "Danh sách bình luận";
+﻿@using TatBlog.Core.Contracts;
+@using TatBlog.Core.Entities;
+@model TatBlog.WebApp.Areas.Admin.Models.CommentFilterModel
+
+@{
+    ViewData["PageTitle"] = "Quản lý bình luận";
+    var commentsList = ViewBag.CommentsList as IPagedList<Comment>;
 }
+
 <h1>
     Danh sách bình luận
 </h1>
+
+<partial name="_CommentFilterPane" model=@Model />
+
+@if (commentsList != null && commentsList.Count > 0)
+{
+    <table class="table table-responsive table-striped">
+        <thead>
+            <tr class="row">
+                <th class="col-2">Tên người gửi</th>
+                <th class="col-4">Nội dung</th>
+                <th class="col-1">Ngày gửi</th>
+                <th class="col-1">Phê duyệt</th>
+                <th class="col-3">Bài viết</th>
+                <th class="col-1">Xóa</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var comment in commentsList)
+            {
+                <tr class="row">
+                    <td class="col-2">
+                        @comment.Name
+                    </td>
+                    <td class="col-4">
+                        @comment.Description
+                    </td>
+                    <td class="col-1">
+                        @comment.PostedDate.ToString("dd/MM/yyyy")
+                    </td>
+                    <td class="col-1">
+                        @if (comment.IsApproved)
+                        {
+                            <a asp-area="Admin"
+                   asp-controller="Comments"
+                   asp-action="ChangeCommentApprovedState"
+                   asp-route-id=@comment.Id
+                   class="btn btn-primary">
+                                Có
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-area="Admin"
+                   asp-controller="Comments"
+                   asp-action="ChangeCommentApprovedState"
+                   asp-route-id=@comment.Id
+                   class="btn btn-secondary">
+                                Không
+                            </a>
+                        }
+                    </td>
+                    <td class="col-3">
+                        @comment.Post.Title
+                    </td>
+                    <td class="col-1">
+                        <a asp-area="Admin"
+                   asp-controller="Comments"
+                   asp-action="Delete"
+                   asp-route-id=@comment.Id
+                   onclick="return confirm('Bạn có thực sự muốn xóa bình luận này không?')"
+                   class="text-danger">
+                            Xóa
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <partial name="_PaginatePage" model=@commentsList />
+}
+else
+{
+    <h1 class="text-danger">
+        Không tìm thấy bài viết nào
+    </h1>
+}

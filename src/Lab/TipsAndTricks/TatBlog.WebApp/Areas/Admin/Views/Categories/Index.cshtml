@@ -1,6 +1,88 @@
-﻿@{
+﻿@using TatBlog.Core.Contracts;
+@using TatBlog.Core.Entities;
+@model TatBlog.WebApp.Areas.Admin.Models.CategoryFilterModel
+@{
     ViewData["PageTitle"] = "Danh sách chủ đề";
+    var categoryList = ViewBag.PostsList as IPagedList<Category>;
 }
 <h1>
     Danh sách chủ đề
 </h1>
+<partial name="_CategoryFilterPane" model=@Model />
+
+@if (categoryList != null && categoryList.Count > 0)
+{
+    <table class="table table-responsive table-striped">
+        <thead>
+            <tr>
+                <th>Tên chủ đề</th>
+                <th>Mô tả</th>
+                <th>Show on menu</th>
+                <th>Xóa</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in categoryList)
+            {
+                <tr>
+                    <td>
+                        <a asp-area="Admin"
+                   asp-controller="Categories"
+                   asp-action="Edit"
+                   asp-route-id="@category.Id"
+                   class="text-bold">
+                            @category.Name
+                        </a>
+                        <p class="text-muted">
+                            @category.UrlSlug
+                        </p>
+                    </td>
+                    <td>
+                        @category.Description
+                    </td>
+                    <td>
+                        <button type="button" onclick="" class="btn btn-sm @(category.ShowOnMenu ? "btn-primary" : "btn-danger")">
+                            @if (category.ShowOnMenu)
+                            {
+                                <i class="fa fa-check"></i>
+                            }
+                            else
+                            {
+                                <i class="fa fa-times"></i>
+                            }
+                        </button>
+                    </td>
+                    <td>
+                        <a asp-area="Admin"
+                   asp-controller="Categories"
+                   asp-action="Delete"
+                   asp-route-id=@category.Id
+                   onclick="return confirm('“Bạn có thực sự muốn xóa bài viết này không?')">
+                            <button class="btn btn-danger" type="button"> Xóa</button>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <partial name="_PaginatePage" model=@categoryList />
+}
+else
+{
+    <h1>
+        Không tìm thấy chủ đề nào
+    </h1>
+}
+@*@section scripts
+    {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/lib/speakingurl/speakingurl.min.js"></script>
+    <script>
+        $(function () {
+            $('#Title').change(function () {
+                var slug = getSlug(this.value);
+                $('#UrlSlug').val(slug).trigger('blur');
+            });
+        });
+    </script>
+}*@

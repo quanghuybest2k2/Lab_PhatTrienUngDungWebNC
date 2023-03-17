@@ -35,7 +35,7 @@ namespace TatBlog.Services.Blogs
         Task<IList<CategoryItem>> GetCategoriesAsync(
             bool showOnMenu = false, CancellationToken cancellationToken = default);
         // Lấy danh sách từ khóa,thẻ và phân trang theo các tham số pagingParams
-        Task<IPagedList<TagItem>> GetPagedTagsAsync(IPagingParams pagingParams, CancellationToken cancellationToken = default);
+        //Task<IPagedList<TagItem>> GetPagedTagsAsync(IPagingParams pagingParams, CancellationToken cancellationToken = default);
         // Tìm một thẻ (Tag) theo tên định danh (slug)
         Task<Tag> GetTagBySlugAsync(string slug, CancellationToken cancellationToken = default);
         //Lấy danh sách tất cả các thẻ (Tag) kèm theo số bài viết chứa thẻ đó. Kết quả trả về kiểu IList<TagItem>.
@@ -104,5 +104,28 @@ namespace TatBlog.Services.Blogs
         Task<Tag> GetTagAsync(string slug, CancellationToken cancellationToken = default);
         //
         Task<Post> CreateOrUpdatePostAsync(Post post, IEnumerable<string> tags, CancellationToken cancellationToken = default);
+        //
+        Task<bool> DeletePostById(int id, CancellationToken cancellationToken = default);
+        //
+        Task ChangeStatusPushed(int id, CancellationToken cancellationToken = default);
+        //
+        Task<IPagedList<CategoryItem>> GetPagedCategoriesAsync(
+            IPagingParams pagingParams,
+            CancellationToken cancellationToken = default);
+        //
+        Task<bool> DeleteCategoryAsync(
+           int categoryId, CancellationToken cancellationToken = default);
+        //
+        Task<Category> EditCategoryAsync(Category cat, CancellationToken cancellationToken = default);
+        //
+        Task<Tag> GetTagByIdAsync(int tagId);
+        //
+        Task<bool> DeleteTagAsync(
+            int tagId, CancellationToken cancellationToken = default);
+        //
+        Task<IPagedList<TagItem>> GetPagedTagsAsync(
+        IPagingParams pagingParams, CancellationToken cancellationToken = default);
+        //
+        Task<Tag> EditTagAsync(Tag newTag, CancellationToken cancellationToken = default);
     }
 }

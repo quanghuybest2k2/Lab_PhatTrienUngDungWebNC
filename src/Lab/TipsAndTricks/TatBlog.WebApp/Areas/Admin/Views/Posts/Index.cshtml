@@ -4,13 +4,19 @@
 @{
     ViewData["PageTitle"] = "Danh sách bài viết";
     var postsList = ViewBag.PostsList as IPagedList<Post>;
+    var categoryList = new List<SelectListItem>
+    {
+        new SelectListItem("Co", "true"),
+        new SelectListItem("Khong", "false")
+    };
 }
 <h1>
     Danh sách bài viết
 </h1>
 @*Hiển thị form để tìm bài viết*@
- 
-<partial name="_PostFilterPane" />
+
+<partial name="_PostFilterPane" model=@Model />
+
 @if (postsList != null && postsList.Count > 0)
 {
     <table class="table table-responsive table-striped">
@@ -45,16 +51,67 @@
                         @post.Category.Name
                     </td>
                     <td>
-                        @(post.Published ? "Có" : "Không")
+                        @*<select class="form-select" aria-label="Default select example"
+                asp-for="@post.CategoryId" asp-items="@categoryList">
+
+                </select>*@
+                        @*@(post.Published ? "Có" : "Không")*@
+                        <button type="button" onclick="" class="btn btn-sm @(post.Published ? "btn-primary" : "btn-danger")">
+                            @if (post.Published)
+                            {
+                                <a asp-area="Admin"
+                       asp-controller="Posts"
+                       asp-action="ChangePublished"
+                       asp-route-id=@post.Id
+                       class="btn btn-primary">
+                                    Có
+                                </a>
+                                @*<i class="fa fa-check"></i>*@
+                            }
+                            else
+                            {
+                                <a asp-area="Admin"
+                       asp-controller="Posts"
+                       asp-action="ChangePublished"
+                       asp-route-id=@post.Id
+                       class="btn btn-secondary">
+                                    Không
+                                </a>
+                                @*<i class="fa fa-times"></i>*@
+                            }
+                        </button>
+                    </td>
+                    <td>
+                        <a asp-area="Admin"
+                   asp-controller="Posts"
+                   asp-action="Delete"
+                   asp-route-id=@post.Id
+                   onclick="return confirm('“Bạn có thực sự muốn xóa bài viết này không?')">
+                            <button class="btn btn-danger" type="button"> Xóa</button>
+                        </a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+    <partial name="_PaginatePage" model=@postsList />
 }
 else
 {
-    <h1 class="text-danger">
+    <h1>
         Không tìm thấy bài viết nào
     </h1>
 }
+@*@section scripts
+    {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/lib/speakingurl/speakingurl.min.js"></script>
+    <script>
+        $(function () {
+            $('#Title').change(function () {
+                var slug = getSlug(this.value);
+                $('#UrlSlug').val(slug).trigger('blur');
+            });
+        });
+    </script>
+}*@
