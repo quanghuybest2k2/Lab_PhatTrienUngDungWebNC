@@ -51,25 +51,35 @@ namespace TatBlog.Services.Blogs
         }
         // Tìm bài viết có tên định danh là slug
         // và được đăng vào tháng 'month' năm 'year'
-        public async Task<Post> GetPostAsync(int year, int month, string slug, CancellationToken cancellationToken = default)
+        public async Task<Post> GetPostAsync(int year, int month, int day, string slug, CancellationToken cancellationToken = default)
         {
             IQueryable<Post> postsQuery = _context.Set<Post>()
-                .Include(x => x.Category) // Include lấy quan hệ 2 bảng, post quan hệ với bảng khác
-                .Include(x => x.Author);
+                                                      .Include(x => x.Category)
+                                                      .Include(x => x.Author)
+                                                      .Include(x => x.Tags);
             if (year > 0)
             {
                 postsQuery = postsQuery.Where(x => x.PostedDate.Year == year);
             }
+
             if (month > 0)
             {
                 postsQuery = postsQuery.Where(x => x.PostedDate.Month == month);
             }
+
+            if (day > 0)
+            {
+                postsQuery = postsQuery.Where(x => x.PostedDate.Day == day);
+            }
+
             if (!string.IsNullOrWhiteSpace(slug))
             {
                 postsQuery = postsQuery.Where(x => x.UrlSlug == slug);
             }
+
             return await postsQuery.FirstOrDefaultAsync(cancellationToken);
         }
+
         // Tăng số lượt xem của một bài viết
         public async Task IncreaseViewCountAsync(int postId, CancellationToken cancellationToken = default)
         {
@@ -82,6 +92,19 @@ namespace TatBlog.Services.Blogs
         {
             return await _context.Set<Post>()
                 .AnyAsync(x => x.Id != postId && x.UrlSlug == slug, cancellationToken);
+        }
+        public async Task<bool> IsTagSlugExistedAsync(string slug, CancellationToken cancellationToken = default)
+        {
+            return await _context.Set<Tag>().AnyAsync(t => t.UrlSlug.Equals(slug), cancellationToken);
+        }
+        public async Task<bool> IsCategorySlugExistedAsync(string slug, CancellationToken cancellationToken = default)
+        {
+            return await _context.Set<Category>().AnyAsync(c => c.UrlSlug.Equals(slug), cancellationToken);
+        }
+        public async Task<bool> IsAuthorSlugExistedAsync(int id, string slug, CancellationToken cancellationToken = default)
+        {
+            return await _context.Set<Author>()
+                .AnyAsync(x => x.Id != id && x.UrlSlug == slug, cancellationToken);
         }
         // Lấy danh sách từ khóa,thẻ và phân trang theo các tham số pagingParams
         //public async Task<IPagedList<TagItem>> GetPagedTagsAsync(IPagingParams pagingParams, CancellationToken cancellationToken = default)
@@ -147,6 +170,12 @@ namespace TatBlog.Services.Blogs
         public async Task<Category> GetCategoryByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             return await _context.Set<Category>()
+                 .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+        }
+        // Tìm một author theo mã số cho trước.
+        public async Task<Author> GetAuthorByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            return await _context.Set<Author>()
                  .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
         }
         // Thêm hoặc cập nhật một chuyên mục/chủ đề.
@@ -435,6 +464,31 @@ namespace TatBlog.Services.Blogs
 
             return posts;
         }
+        // loc tac gia
+        private IQueryable<Author> FilterAuthors(AuthorQuery query)
+        {
+            IQueryable<Author> categoryQuery = _context.Set<Author>()
+                                                           .Include(c => c.Posts);
+
+            if (!string.IsNullOrWhiteSpace(query.UrlSlug))
+            {
+                categoryQuery = categoryQuery.Where(x => x.UrlSlug == query.UrlSlug);
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.Email))
+            {
+                categoryQuery = categoryQuery.Where(x => x.Email.Contains(query.Email));
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.Keyword))
+            {
+                categoryQuery = categoryQuery.Where(x => x.FullName.Contains(query.Keyword) ||
+                             x.Notes.Contains(query.Keyword) ||
+                             x.Posts.Any(p => p.Title.Contains(query.Keyword)));
+            }
+
+            return categoryQuery;
+        }
         //để hiển thị danh sách bài viết được đăng
         //trong tháng và năm đã chọn(do người dùng click chuột vào các tháng
         //trong view component Archives ở bài tập 3). 
@@ -674,6 +728,18 @@ namespace TatBlog.Services.Blogs
                 .Where(x => x.Id == tagId)
                 .ExecuteDeleteAsync(cancellationToken) > 0;
         }
+        // delete author
+        public async Task<bool> DeleteAuthorByIdAsync(int? id, CancellationToken cancellationToken = default)
+        {
+            var author = await _context.Set<Author>().FindAsync(id);
+
+            if (author is null) return await Task.FromResult(false);
+
+            _context.Set<Author>().Remove(author);
+            var rowsCount = await _context.SaveChangesAsync(cancellationToken);
+
+            return rowsCount > 0;
+        }
         public async Task<IPagedList<TagItem>> GetPagedTagsAsync(
         IPagingParams pagingParams, CancellationToken cancellationToken = default)
         {
@@ -703,6 +769,267 @@ namespace TatBlog.Services.Blogs
             await _context.SaveChangesAsync(cancellationToken);
 
             return newTag;
+        }
+        // lay tac gia bang truy van
+        public async Task<IPagedList<Author>> GetAuthorByQueryAsync(AuthorQuery query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+        {
+            return await FilterAuthors(query).ToPagedListAsync(
+                                    pageNumber,
+                                    pageSize,
+                                    nameof(AuthorQuery.FullName),
+                                    "DESC",
+                                    cancellationToken);
+        }
+        //
+        public async Task<bool> AddOrUpdateAuthorAsync(Author author, CancellationToken cancellationToken = default)
+        {
+            if (author.Id > 0)
+                _context.Update(author);
+            else
+                _context.Add(author);
+
+            var result = await _context.SaveChangesAsync(cancellationToken);
+
+            return result > 0;
+        }
+        //
+        public async Task<IPagedList<Category>> GetCategoryByQueryAsync(CategoryQuery query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+        {
+            return await FilterCategory(query).ToPagedListAsync(
+                                    pageNumber,
+                                    pageSize,
+                                    nameof(Category.Name),
+                                    "DESC",
+                                    cancellationToken);
+        }
+        private IQueryable<Category> FilterCategory(CategoryQuery query)
+        {
+            IQueryable<Category> categoryQuery = _context.Set<Category>()
+                                                      .Include(c => c.Posts);
+
+            if (query.ShowOnMenu)
+            {
+                categoryQuery = categoryQuery.Where(x => x.ShowOnMenu);
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.UrlSlug))
+            {
+                categoryQuery = categoryQuery.Where(x => x.UrlSlug == query.UrlSlug);
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.Keyword))
+            {
+                categoryQuery = categoryQuery.Where(x => x.Name.Contains(query.Keyword) ||
+                             x.Description.Contains(query.Keyword) ||
+                             x.Posts.Any(p => p.Title.Contains(query.Keyword)));
+            }
+
+            return categoryQuery;
+        }
+        //
+        public async Task AddOrUpdateCategoryAsync(Category category, CancellationToken cancellationToken = default)
+        {
+            if (category.Id > 0)
+                _context.Update(category);
+            else
+                _context.Add(category);
+
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        //
+        public async Task ChangedCategoryStatusAsync(int id, CancellationToken cancellationToken = default)
+        {
+            await _context.Set<Category>()
+                              .Where(x => x.Id == id)
+                              .ExecuteUpdateAsync(c => c.SetProperty(x => x.ShowOnMenu, x => !x.ShowOnMenu), cancellationToken);
+        }
+        //
+        public async Task DeleteCategoryByIdAsync(int? id, CancellationToken cancellationToken = default)
+        {
+            if (id == null || _context.Categories == null)
+            {
+                Console.WriteLine("Không có danh mục nào");
+                return;
+            }
+            var category = await _context.Set<Category>().FindAsync(id);
+
+            if (category != null)
+            {
+                _context.Categories.Remove(category);
+                await _context.SaveChangesAsync(cancellationToken);
+
+                Console.WriteLine($"Đã xóa danh mục với id {id}");
+            }
+        }
+        //
+        public async Task<IPagedList<Comment>> GetCommentByQueryAsync(CommentQuery query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+        {
+            return await FilterComment(query).ToPagedListAsync(
+                                              pageNumber,
+                                              pageSize,
+                                              nameof(Comment.PostDate),
+                                              "DESC",
+                                              cancellationToken);
+        }
+        private IQueryable<Comment> FilterComment(CommentQuery query)
+        {
+            IQueryable<Comment> commentQuery = _context.Set<Comment>()
+                                                           .Include(c => c.Post);
+
+            if (query.Censored)
+            {
+                commentQuery = commentQuery.Where(x => x.Censored);
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.UserName))
+            {
+                commentQuery = commentQuery.Where(x => x.UserName.Contains(query.UserName));
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.PostTitle))
+            {
+                commentQuery = commentQuery.Where(x => x.Post.Title.Contains(query.PostTitle));
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.Keyword))
+            {
+                commentQuery = commentQuery.Where(x => x.Content.Contains(query.Keyword));
+            }
+
+            if (query.Year > 0)
+            {
+                commentQuery = commentQuery.Where(x => x.PostDate.Year == query.Year);
+            }
+
+            if (query.Month > 0)
+            {
+                commentQuery = commentQuery.Where(x => x.PostDate.Month == query.Month);
+            }
+
+            if (query.Day > 0)
+            {
+                commentQuery = commentQuery.Where(x => x.PostDate.Day == query.Day);
+            }
+
+            return commentQuery;
+        }
+        //
+        public async Task ChangeCommentStatusAsync(int id, CancellationToken cancellationToken = default)
+        {
+            await _context.Set<Comment>()
+                              .Where(x => x.Id == id)
+                              .ExecuteUpdateAsync(c => c.SetProperty(x => x.Censored, x => !x.Censored), cancellationToken);
+        }
+        //
+        public async Task<bool> DeleteCommentByIdAsync(int? id, CancellationToken cancellationToken = default)
+        {
+            var comment = await _context.Set<Comment>().FindAsync(id);
+
+            if (comment is null) return await Task.FromResult(false);
+
+            _context.Set<Comment>().Remove(comment);
+            var rowsCount = await _context.SaveChangesAsync(cancellationToken);
+
+            return rowsCount > 0;
+        }
+        // tong post
+        public async Task<int> TotalPostsAsync()
+        {
+            return await _context.Set<Post>().CountAsync();
+        }
+        //
+        public async Task<int> TotalUnpublishedPostsAsync()
+        {
+            return await _context.Set<Post>().CountAsync(p => !p.Published);
+        }
+        //
+        public async Task<int> TotalCategoriesAsync()
+        {
+            return await _context.Set<Category>().CountAsync();
+        }
+        //
+        public async Task<int> TotalAuthorsAsync()
+        {
+            return await _context.Set<Author>().CountAsync();
+        }
+        //
+        public async Task<int> TotalWaitingApprovalCommentAsync()
+        {
+            return await _context.Set<Comment>().CountAsync(c => !c.Censored);
+        }
+        //
+        public async Task<int> TotalSubscriberAsync()
+        {
+            return await _context.Set<Subscriber>().CountAsync();
+        }
+        //
+        public async Task<int> TotalNewerSubscribeDayAsync()
+        {
+            return await _context.Set<Subscriber>().CountAsync(s => s.SubDated.Day.Equals(DateTime.Now.Day));
+        }
+        //
+        public async Task<IPagedList<Subscriber>> GetSubscriberByQueryAsync(SubscriberQuery query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+        {
+            return await FilterSubscriber(query).ToPagedListAsync(
+                                                  pageNumber,
+                                                  pageSize,
+                                                  nameof(Subscriber.SubDated),
+                                                  "DESC",
+                                                  cancellationToken);
+        }
+        private IQueryable<Subscriber> FilterSubscriber(SubscriberQuery query)
+        {
+            IQueryable<Subscriber> categoryQuery = _context.Set<Subscriber>();
+
+            if (!string.IsNullOrWhiteSpace(query.Email))
+            {
+                categoryQuery = categoryQuery.Where(x => x.SubscribeEmail.Equals(query.Email));
+            }
+
+            if (query.ForceLock)
+            {
+                categoryQuery = categoryQuery.Where(x => x.ForceLock);
+            }
+
+            if (query.UnsubscribeVoluntary)
+            {
+                categoryQuery = categoryQuery.Where(x => x.UnsubscribeVoluntary);
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.Keyword))
+            {
+                categoryQuery = categoryQuery.Where(x => x.CancelReason.Contains(query.Keyword) ||
+                             x.AdminNotes.Contains(query.Keyword));
+            }
+
+            return categoryQuery;
+        }
+        // delete subcriber
+        public async Task<bool> DeleteSubscriberAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var subscriber = await _context.Set<Subscriber>().FindAsync(id);
+
+            if (subscriber is null)
+                return await Task.FromResult(false);
+
+            _context.Set<Subscriber>().Remove(subscriber);
+            var affected = await _context.SaveChangesAsync(cancellationToken);
+
+            return affected > 0;
+        }
+        // comment data
+        public async Task<IPagedList<Comment>> GetCommentPostIdAsync(int postId, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
+        {
+            var commentQuery = _context.Set<Comment>()
+                                           .Where(c => c.PostID.Equals(postId));
+
+            commentQuery = commentQuery.Where(c => c.Censored);
+
+            return await commentQuery.ToPagedListAsync(pageNumber,
+                                                       pageSize,
+                                                       nameof(Comment.PostDate),
+                                                       "DESC",
+                                                       cancellationToken);
         }
     }
 }

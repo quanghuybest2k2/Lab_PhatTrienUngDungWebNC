@@ -1,0 +1,51 @@
+﻿@using TatBlog.Services.Blogs;
+@model TatBlog.WebApp.Areas.Admin.Models.SubscriberFilterModel
+
+@{
+    var viewData = ViewData["PagerQuery"] as PagerQuery ?? new PagerQuery { Area = "Admin", Controller = "Posts", Action = "Index" };
+}
+
+<div class="mb-4">
+    <form method="get"
+          class="row gy-2 gx-3 align-items-center"
+          asp-area="@viewData.Area"
+          asp-controller="@viewData.Controller"
+          asp-action="@viewData.Action">
+        <div class="col-auto">
+            <label class="visually-hidden" asp-for="Keyword"></label>
+            <input type="text" class="form-control" placeholder="Nhập từ khóa để tìm kiếm..." asp-for="Keyword">
+        </div>
+        @*add*@
+        <div class="col-auto">
+            <label class="visually-hidden" asp-for="Email"></label>
+            <input type="text" class="form-control" placeholder="Nhập email ..." asp-for="Email">
+        </div>
+        <div class="col-auto">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" asp-for="ForceLock">
+                <label class="form-check-label" asp-for="ForceLock"></label>
+            </div>
+        </div>
+        <div class="col-auto">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" asp-for="UnsubscribeVoluntary">
+                <label class="form-check-label" asp-for="UnsubscribeVoluntary"></label>
+            </div>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Tìm/lọc</button>
+            <a class="btn btn-info"
+               asp-area="@viewData.Area"
+               asp-controller="@viewData.Controller"
+               asp-action="Index">
+                Bỏ lọc
+            </a>
+            <a class="btn btn-success"
+               asp-area="@viewData.Area"
+               asp-controller="@viewData.Controller"
+               asp-action="Edit">
+                Thêm mới
+            </a>
+        </div>
+    </form>
+</div>

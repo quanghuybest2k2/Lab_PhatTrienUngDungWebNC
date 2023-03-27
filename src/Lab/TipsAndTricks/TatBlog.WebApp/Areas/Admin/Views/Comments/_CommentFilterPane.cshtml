@@ -1,53 +1,67 @@
-﻿@model TatBlog.WebApp.Areas.Admin.Models.CommentFilterModel
+﻿@using TatBlog.Services.Blogs;
+@model TatBlog.WebApp.Areas.Admin.Models.CommentFilterModel
 
-<form asp-area="Admin"
-      asp-controller="Comments"
-      asp-action="Index"
-      method="get"
-      class="row gy-2 gx-3 align-items-center">
-    <div class="col-auto">
-        <label asp-for="Keyword" class="visually-hidden"></label>
-        <input type="text"
-               asp-for="Keyword"
-               class="form-control"
-               placeholder="Nhập từ khóa" />
-    </div>
-    <div class="col-auto">
-        <label asp-for="PostId" class="visually-hidden"></label>
-        <select asp-for="PostId"
-                asp-items=@Model.PostList
-                class="form-select">
-            <option value="" selected>-- Chọn bài viết --</option>
-        </select>
-    </div>
-    <div class="col-auto">
-        <label asp-for="PostedYear" class="visually-hidden"></label>
-        <input type="text"
-               asp-for="PostedYear"
-               class="form-control"
-               placeholder="Nhập năm" />
-    </div>
-    <div class="col-auto">
-        <label asp-for="PostedMonth" class="visually-hidden"></label>
-        <select asp-for="PostedMonth"
-                asp-items=@Model.MonthList
-                class="form-select">
-            <option value="" selected>-- Chọn tháng --</option>
-        </select>
-    </div>
-    <div class="col-auto d-flex">
-        <input type="checkbox"
-               asp-for="IsNotApproved"
-               class="form-check me-2" />
-        <label asp-for="IsNotApproved">Chưa phê duyệt</label>
-    </div>
-    <div class="col-auto">
-        <button type="submit" class="btn btn-primary">Tìm/Lọc</button>
-        <a asp-area="Admin"
-           asp-controller="Comments"
-           asp-action="Index"
-           class="btn btn-warning">
-            Bỏ lọc
-        </a>
-    </div>
-</form>
+
+@{
+    var viewData = ViewData["PagerQuery"] as PagerQuery ?? new PagerQuery { Area = "Admin", Controller = "Posts", Action = "Index" };
+}
+
+<div class="mb-4">
+    <form method="get"
+          class="row gy-2 gx-3 align-items-center"
+          asp-area="@viewData.Area"
+          asp-controller="@viewData.Controller"
+          asp-action="@viewData.Action">
+        <div class="col-auto">
+            <label class="visually-hidden" asp-for="Keyword"></label>
+            <input type="text" class="form-control" placeholder="Nhập từ khóa để tìm kiếm..." asp-for="Keyword">
+        </div>
+        @*add*@
+        <div class="col-auto">
+            <label asp-for="Keyword" class="visually-hidden"></label>
+            <input type="text"
+                   asp-for="Keyword"
+                   class="form-control"
+                   placeholder="Nhập từ khóa" />
+        </div>
+        <div class="col-auto">
+            <label class="visually-hidden" asp-for="UserName"></label>
+            <input type="text" class="form-control" placeholder="Nhập tên độc giả ..." asp-for="UserName">
+        </div>
+        <div class="col-auto">
+            <label class="visually-hidden" asp-for="PostTitle"></label>
+            <input type="text" class="form-control" placeholder="Nhập tên bài viết ..." asp-for="PostTitle">
+        </div>
+        <div class="col-auto">
+            <label class="visually-hidden" asp-for="Year"></label>
+            <input type="text" class="form-control" placeholder="Nhập năm ..." asp-for="Year">
+        </div>
+        <div class="col-auto">
+            <label class="visually-hidden" asp-for="Keyword"></label>
+            <select asp-for="Month" asp-items="Model.MonthList" class="form-select">
+                <option value="" selected>-- Chọn tháng</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" asp-for="Censored">
+                <label class="form-check-label" asp-for="Censored"></label>
+            </div>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Tìm/lọc</button>
+            <a class="btn btn-info"
+               asp-area="@viewData.Area"
+               asp-controller="@viewData.Controller"
+               asp-action="Index">
+                Bỏ lọc
+            </a>
+            <a class="btn btn-success"
+               asp-area="@viewData.Area"
+               asp-controller="@viewData.Controller"
+               asp-action="Edit">
+                Thêm mới
+            </a>
+        </div>
+    </form>
+</div>

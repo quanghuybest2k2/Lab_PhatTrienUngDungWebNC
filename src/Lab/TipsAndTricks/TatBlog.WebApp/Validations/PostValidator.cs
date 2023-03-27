@@ -1,6 +1,4 @@
 ﻿using FluentValidation;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using TatBlog.Services.Blogs;
 using TatBlog.WebApp.Areas.Admin.Models;
 
@@ -70,5 +68,6 @@ namespace TatBlog.WebApp.Validations
         {
             return postModel.GetSelectedTags().Any();
         }
+
     }
 }

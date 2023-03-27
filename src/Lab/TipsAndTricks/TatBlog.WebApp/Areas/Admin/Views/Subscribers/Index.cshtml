@@ -1,6 +1,115 @@
-﻿@{
-    ViewData["PageTitle"] = "Danh sách đăng ký";
+﻿@using TatBlog.Services.Blogs;
+@{
+    ViewData["Title"] = "Người đăng ký theo dõi";
+    var subscribersList = ViewData["SubscribersList"] as IPagedList<Subscriber>;
+    var pagerQuery = (ViewData["PagerQuery"] as PagerQuery) ?? new PagerQuery();
 }
+
 <h1>
-    Danh sách đăng ký
+    Danh sách người theo dõi
 </h1>
+
+<partial name="_SubscriberFilterPane" model="Model" />
+
+@if (subscribersList?.Count > 0)
+{
+    <table class="table table-responsive table-striped">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Lý do hủy</th>
+                <th>Quản trị viên khóa</th>
+                <th>Tình nguyện hủy</th>
+                <th>Ghi chú của quản trị viên</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var subscriber in subscribersList)
+            {
+                <tr>
+                    <td>
+                        <span class="text-bold">
+                            @subscriber.SubscribeEmail
+                        </span>
+                        <p class="text-muted">
+                            Sub Date: @subscriber.SubDated
+                        </p>
+                        <p class="text-muted">
+                            Unsub Date: @subscriber.UnSubDated
+                        </p>
+                    </td>
+                    <td>
+                        @subscriber.CancelReason
+                    </td>
+                    <td>
+                        @(subscriber.ForceLock ? "Khóa" : "Không")
+                    </td>
+                    <td>
+                        @(subscriber.UnsubscribeVoluntary ? "Khóa" : "Không")
+                    </td>
+                    <td>
+                        @subscriber.AdminNotes
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <button type="button" value="@subscriber.Id" class="btn btn-danger" data-bs-target="#deleteModal" data-bs-toggle="modal">
+                                Hủy theo dõi
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <partial name="_PaginatePage" model="@subscribersList" />
+}
+else
+{
+    <h1 class="text-danger">
+        Không tìm thấy người theo dõi nào
+    </h1>
+}
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Hủy đăng ký cho người theo dõi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn hủy người theo dõi này?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Không</button>
+                <button type="button" id="btn-delete-subscriber" class="btn btn-danger">Xóa theo dõi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form method="post"
+      name="delete-subscriber-form"
+      enctype="multipart/form-data"
+      asp-area="Admin"
+      asp-controller="Subscribers"
+      asp-action="DeleteSubscriber">
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var subscriberId;
+        var deleteForm = document.forms['delete-subscriber-form'];
+        var btnDeleteSubscriber = document.getElementById('btn-delete-subscriber');
+        $('#deleteModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            subscriberId = button.val();
+        });
+        btnDeleteSubscriber.onclick = function () {
+            deleteForm.action += "/" + subscriberId;
+            deleteForm.submit();
+        }
+    });
+</script>

@@ -1,0 +1,122 @@
+@using TatBlog.Services.Blogs;
+@model TatBlog.Core.Contracts.IPagedList
+
+@{
+  var postQuery = (ViewData["PostQuery"] as PostQuery) ?? new PostQuery();
+  var pagerQuery = (ViewData["PagerQuery"] as PagerQuery) ?? new PagerQuery();
+  var slug = "";
+  var pagedList = Model;
+}
+
+@{
+    int currentPage = pagedList.PageNumber;
+    if (pagedList.PageCount <= 1) return;
+
+    if (pagedList.IsLastPage) 
+        currentPage = pagedList.PageCount;
+    List<int> pagesRanges = new List<int>();
+
+    int delta = 7;
+    int remain = delta * 2;
+
+    pagesRanges.Add(currentPage);
+    for (int i = 1; i <= delta; i++)
+    {
+        if (currentPage + i  <= pagedList.PageCount) {
+            pagesRanges.Add(currentPage + i); 
+            remain --;
+        }
+               
+        if (currentPage - i >= 1) {
+            pagesRanges.Insert(0, currentPage - i);
+            remain --;
+        }
+            
+    }
+    if (remain > 0) {
+        if (pagesRanges[0] == 1) {
+            for (int i = 1; i <= remain; i++)
+            {
+                if (pagesRanges.Last() + 1 <= pagedList.PageCount) {
+                    pagesRanges.Add(pagesRanges.Last() + 1);
+                }
+            }
+        }
+        else {
+            for (int i = 1; i <= remain; i++)
+            {
+                if (pagesRanges.First() - 1 > 1) {
+                    pagesRanges.Insert(0, pagesRanges.First() - 1);
+                }
+            }
+        }
+    }
+}
+
+<ul class="pagination">
+    @if (pagedList.HasPreviousPage)
+    {
+      <li class="page-item">
+        <a class="page-link"
+          asp-controller="@pagerQuery.Controller"
+          asp-action="@pagerQuery.Action"
+          asp-area="@pagerQuery.Area"
+          asp-route-slug="@slug"
+          asp-route-keyword="@postQuery.Keyword"
+          asp-route-p="@(currentPage - 1)"
+          asp-route-ps="@pagedList.PageSize">
+          Trang trước
+        </a>
+      </li>
+    }
+    else
+    {
+      <li class="page-item disabled">
+          <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Trang trước</a>
+      </li>
+    }
+    @foreach (var pageitem in pagesRanges)
+    {
+        if (pageitem != currentPage) {
+            <li class="page-item">
+              <a class="page-link"
+                asp-controller="@pagerQuery.Controller"
+                asp-action="@pagerQuery.Action"
+                asp-area="@pagerQuery.Area"
+                asp-route-slug="@slug"
+                asp-route-keyword="@postQuery.Keyword"
+                asp-route-p="@pageitem"
+                asp-route-ps="@pagedList.PageSize">
+                @pageitem
+              </a>
+            </li>
+        }   
+        else 
+        {
+            <li class="page-item active" aria-current="page">
+                <a class="page-link" href="#">@pageitem</a>
+            </li>
+        }
+    }
+    @if (pagedList.HasNextPage)
+    {
+      <li class="page-item">
+        <a class="page-link"
+          asp-controller="@pagerQuery.Controller"
+          asp-action="@pagerQuery.Action"
+          asp-area="@pagerQuery.Area"
+          asp-route-slug="@slug"
+          asp-route-keyword="@postQuery.Keyword"
+          asp-route-p="@(currentPage + 1)"
+          asp-route-ps="@pagedList.PageSize">
+          Trang sau
+        </a>
+      </li>
+    }
+    else
+    {
+      <li class="page-item disabled">
+        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Trang sau</a>
+      </li>
+    }
+</ul>

@@ -10,6 +10,7 @@ namespace TatBlog.Services.Blogs
     public class CategoryQuery : ICategoryQuery
     {
         public string Keyword { get; set; }
+        public string UrlSlug { get; set; }
         public bool ShowOnMenu { get; set; }
     }
 }

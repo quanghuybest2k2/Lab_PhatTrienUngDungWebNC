@@ -13,16 +13,18 @@ namespace TatBlog.WebApp.Areas.Admin.Controllers
     public class PostsController : Controller
     {
         private readonly ILogger<PostsController> _logger;
-        private readonly IBlogRepository _blogRepository; 
+        private readonly IBlogRepository _blogRepository;
         private readonly IMediaManager _mediaManager;
         private readonly IMapper _mapper;
+        private readonly IValidator<PostEditModel> _postValidator;
 
-        public PostsController(ILogger<PostsController> logger,IBlogRepository blogRepository, IMediaManager mediaManager, IMapper mapper)
+        public PostsController(ILogger<PostsController> logger,IBlogRepository blogRepository, IMediaManager mediaManager, IMapper mapper, IValidator<PostEditModel> postValidator)
         {
             _logger = logger;
             _blogRepository = blogRepository;
             _mediaManager = mediaManager;
             _mapper = mapper;
+            _postValidator = postValidator;
         }
         public async Task PopulatePostFilterModelAsync(PostFilterModel model)
         {
@@ -67,6 +69,13 @@ namespace TatBlog.WebApp.Areas.Admin.Controllers
                 .GetPagedPostsAsync(postQuery, 1, 10);
             _logger.LogInformation("Chuẩn bị dữ liệu cho ViewModel");
             await PopulatePostFilterModelAsync(model);
+            ViewData["PagerQuery"] = new PagerQuery
+            {
+                Area = "Admin",
+                Controller = "Posts",
+                Action = "Index",
+            };
+
             return View(model);
         }
         // lay du lieu
@@ -143,12 +152,14 @@ namespace TatBlog.WebApp.Areas.Admin.Controllers
                 : Json(true);
         }
         //[HttpDelete]
-        public async Task<IActionResult> Delete(int id)
+        [HttpPost]
+        public async Task<ActionResult> DeletePost(int id)
         {
             await _blogRepository.DeletePostById(id);
 
             return RedirectToAction("Index");
         }
+        // thay doi trang thai
         public async Task<IActionResult> ChangePublished(int id)
         {
             await _blogRepository.ChangeStatusPushed(id);

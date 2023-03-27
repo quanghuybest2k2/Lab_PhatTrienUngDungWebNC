@@ -1,0 +1,92 @@
+﻿@model TatBlog.WebApp.Areas.Admin.Models.AuthorEditModel
+@{
+    ViewData["PageTitle"] = "Thêm/Cập nhật tác giả";
+}
+<div class="container">
+    <div class="mb-3">
+        <label class="form-label">Thêm/ Cập nhập tác giả</label>
+    </div>
+    <form method="post"
+          enctype="multipart/form-data"
+          asp-area="Admin"
+          asp-controller="Authors"
+          asp-action="Edit">
+        <div asp-validation-summary="ModelOnly"></div>
+        <input type="hidden" asp-for="Id">
+        <div class="mb-3">
+            <label asp-for="FullName" class="form-label"></label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" asp-for="FullName">
+                <span class="text-danger"
+                      asp-validation-for="FullName"></span>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label asp-for="UrlSlug" class="form-label"></label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" asp-for="UrlSlug">
+                <span class="text-danger"
+                      asp-validation-for="UrlSlug"></span>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+        {
+            <div class="mb-3">
+                <label asp-for="ImageUrl" class="form-label"></label>
+                <div class="col-sm-10">
+                    <img src="/@Model.ImageUrl" alt="" class="img-thumbnail">
+                </div>
+            </div>
+        }
+
+        <div class="mb-3">
+            <label asp-for="ImageFile" class="form-label"></label>
+            <div class="col-sm-10">
+                <input type="file" class="form-control" asp-for="ImageFile">
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" asp-for="Email">
+                <span class="text-danger"
+                      asp-validation-for="Email"></span>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Notes" class="form-label"></label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" asp-for="Notes">
+                <span class="text-danger"
+                      asp-validation-for="Notes"></span>
+            </div>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">
+                Lưu các thay đổi
+            </button>
+            <a asp-area="Admin"
+               asp-controller="Posts"
+               asp-action="Index"
+               class="btn btn-danger">
+                Hủy & Quay lại
+            </a>
+        </div>
+    </form>
+</div>
+@section scripts
+    {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/lib/speakingurl/speakingurl.min.js"></script>
+    <script>
+        $(function () {
+            $('#FullName').change(function () {
+                var slug = getSlug(this.value);
+                console.log(slug);
+                $('#UrlSlug').val(slug).trigger('blur');
+            });
+        });
+    </script>
+}

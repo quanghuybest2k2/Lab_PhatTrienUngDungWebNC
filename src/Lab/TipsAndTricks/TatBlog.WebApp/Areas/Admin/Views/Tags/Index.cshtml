@@ -1,68 +1,108 @@
 ﻿@using TatBlog.Core.Contracts;
 @using TatBlog.Core.DTO;
 @using TatBlog.Core.Entities;
-@model TatBlog.WebApp.Areas.Admin.Models.TagFilterModel
+@using TatBlog.Services.Blogs;
 
 @{
-    ViewData["PageTitle"] = "Quản lý thẻ";
-    var tagsList = ViewBag.TagsList as IPagedList<TagItem>;
+    ViewData["PageTitle"] = "Danh sách thẻ";
+    var tagsList = ViewData["TagsList"] as IPagedList<Tag>;
+    var pagerQuery = (ViewData["PagerQuery"] as PagerQuery) ?? new PagerQuery();
 }
 
 <h1>
     Danh sách thẻ
 </h1>
 
-<partial name="_TagFilterPane" model=@Model />
+<partial name="_TagFilterPane" model="Model" />
 
-@if (tagsList != null && tagsList.Count > 0)
+@if (tagsList?.Count > 0)
 {
-    <table class="table table-responsive table-striped">
+    <table class="table table-striped table-hover">
         <thead>
-            <tr class="row">
-                <th class="col-5">Thẻ</th>
-                <th class="col-5">Mô tả</th>
-                <th class="col-1">Số lượng bài viết</th>
-                <th class="col-1">Xóa</th>
+            <tr>
+                <th scope="col">Tên thẻ</th>
+                <th scope="col">URL Slug</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var tag in tagsList)
             {
-                <tr class="row">
-                    <td class="col-5">
-                        <a asp-area="Admin"
+                <tr>
+                    <td>
+                        <a class="link-secondary text-decoration-none"
+                   asp-area="Admin"
                    asp-controller="Tags"
                    asp-action="Edit"
-                   asp-route-id="@tag.Id"
-                   class="text-bold">
+                   asp-route-id="@tag.Id">
                             @tag.Name
                         </a>
+                        <p class="text-muted">
+                            @tag.Description
+                        </p>
                     </td>
-                    <td class="col-5">
-                        @tag.Description
+                    <td>
+                        @tag.UrlSlug
                     </td>
-                    <td class="col-1">
-                        @tag.PostCount
-                    </td>
-                    <td class="col-1">
-                        <a asp-area="Admin"
-                   asp-controller="Tags"
-                   asp-action="DeleteTag"
-                   asp-route-id=@tag.Id
-                   onclick="return confirm('Bạn có thực sự muốn xóa thẻ này không?')"
-                   class="text-danger">
-                            Xóa
-                        </a>
+                    <td>
+                        <div class="form-group">
+                            <button type="button" value="@tag.Id" class="btn btn-danger" data-bs-target="#deleteModal" data-bs-toggle="modal">
+                                Xóa
+                            </button>
+                        </div>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
-    <partial name="_PaginatePage" model=@tagsList />
+
+    <partial name="_Pager" model="@tagsList" />
 }
 else
 {
-    <h1 class="text-danger">
+    <h4>
         Không tìm thấy thẻ nào
-    </h1>
+    </h4>
 }
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Xóa thẻ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa thẻ này?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" id="btn-delete-tag" class="btn btn-danger">Xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form method="post"
+      name="delete-tag-form"
+      enctype="multipart/form-data"
+      asp-area="Admin"
+      asp-controller="Tags"
+      asp-action="DeleteTag">
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var tagId;
+        var deleteForm = document.forms['delete-tag-form'];
+        var btnDeletedTag = document.getElementById('btn-delete-tag');
+        $('#deleteModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            tagId = button.val();
+        });
+        btnDeletedTag.onclick = function () {
+            deleteForm.action += "/" + tagId;
+            deleteForm.submit();
+        }
+    });
+</script>

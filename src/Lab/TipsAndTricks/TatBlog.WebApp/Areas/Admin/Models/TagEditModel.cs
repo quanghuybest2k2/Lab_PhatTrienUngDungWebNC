@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel;
 
 namespace TatBlog.WebApp.Areas.Admin.Models
 {
@@ -6,13 +7,14 @@ namespace TatBlog.WebApp.Areas.Admin.Models
     {
         public int Id { get; set; }
 
-        [DisplayName("Tên")]
-        public string? Name { get; set; }
+        [DisplayName("Tên thẻ")]
+        public string Name { get; set; }
 
         [DisplayName("Slug")]
-        public string? UrlSlug { get; set; }
+        [Remote("VerifyTagSlug", "Tags", "Admin", HttpMethod = "POST")]
+        public string UrlSlug { get; set; }
 
-        [DisplayName("Giới thiệu")]
-        public string? Description { get; set; }
+        [DisplayName("Nội dung")]
+        public string Description { get; set; }
     }
 }

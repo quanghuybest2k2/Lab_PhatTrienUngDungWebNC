@@ -22,10 +22,10 @@
     <table class="table table-responsive table-striped">
         <thead>
             <tr>
-                <th>Tiêu đề</th>
-                <th>Tác giả</th>
-                <th>Chủ đề</th>
-                <th>Xuất bản</th>
+                <th scope="col">Tiêu đề</th>
+                <th scope="col">Tác giả</th>
+                <th scope="col">Chủ đề</th>
+                <th scope="col">Xuất bản</th>
             </tr>
         </thead>
         <tbody>
@@ -56,39 +56,46 @@
 
                 </select>*@
                         @*@(post.Published ? "Có" : "Không")*@
-                        <button type="button" onclick="" class="btn btn-sm @(post.Published ? "btn-primary" : "btn-danger")">
-                            @if (post.Published)
-                            {
-                                <a asp-area="Admin"
-                       asp-controller="Posts"
-                       asp-action="ChangePublished"
-                       asp-route-id=@post.Id
-                       class="btn btn-primary">
-                                    Có
-                                </a>
-                                @*<i class="fa fa-check"></i>*@
-                            }
-                            else
-                            {
-                                <a asp-area="Admin"
-                       asp-controller="Posts"
-                       asp-action="ChangePublished"
-                       asp-route-id=@post.Id
-                       class="btn btn-secondary">
-                                    Không
-                                </a>
-                                @*<i class="fa fa-times"></i>*@
-                            }
-                        </button>
+                        @*<button type="button" onclick="" class="btn btn-sm @(post.Published ? "btn-primary" : "btn-danger")">
+                @if (post.Published)
+                {
+                <a asp-area="Admin"
+                asp-controller="Posts"
+                asp-action="ChangePublished"
+                asp-route-id=@post.Id
+                class="btn btn-primary">
+                Có
+                </a>
+                }
+                else
+                {
+                <a asp-area="Admin"
+                asp-controller="Posts"
+                asp-action="ChangePublished"
+                asp-route-id=@post.Id
+                class="btn btn-secondary">
+                Không
+                </a>
+                }
+                </button>*@
+                        <form method="post"
+                      enctype="multipart/form-data"
+                      asp-area="Admin"
+                      asp-controller="Posts"
+                      asp-action="PublishChanged">
+                            <input type="hidden" name="postId" value="@post.Id" />
+                            <div class="form-check">
+                                <input class="form-check-input"
+                               type="checkbox"
+                               onChange="this.form.submit()"
+                               @(post.Published ? "checked" : "") />
+                            </div>
+                        </form>
                     </td>
                     <td>
-                        <a asp-area="Admin"
-                   asp-controller="Posts"
-                   asp-action="Delete"
-                   asp-route-id=@post.Id
-                   onclick="return confirm('“Bạn có thực sự muốn xóa bài viết này không?')">
-                            <button class="btn btn-danger" type="button"> Xóa</button>
-                        </a>
+                        <button type="button" value="@post.Id" class="btn btn-danger" data-bs-target="#deleteModal" data-bs-toggle="modal">
+                            Xóa
+                        </button>
                     </td>
                 </tr>
             }
@@ -98,20 +105,50 @@
 }
 else
 {
-    <h1>
+    <h4>
         Không tìm thấy bài viết nào
-    </h1>
+    </h4>
 }
-@*@section scripts
-    {
-    <partial name="_ValidationScriptsPartial" />
-    <script src="~/lib/speakingurl/speakingurl.min.js"></script>
-    <script>
-        $(function () {
-            $('#Title').change(function () {
-                var slug = getSlug(this.value);
-                $('#UrlSlug').val(slug).trigger('blur');
-            });
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Xóa bài viết</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa bài viết này?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" id="btn-delete-post" class="btn btn-danger">Xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
+<form method="post"
+      name="delete-post-form"
+      enctype="multipart/form-data"
+      asp-area="Admin"
+      asp-controller="Posts"
+      asp-action="DeletePost">
+</form>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var postId;
+        var deleteForm = document.forms['delete-post-form'];
+        var btnDeletePost = document.getElementById('btn-delete-post');
+        // When dialog confirm clicked
+        $('#deleteModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            postId = button.val();
         });
-    </script>
-}*@
+
+        // When delete post btn clicked
+        btnDeletePost.onclick = function () {
+            deleteForm.action += "/" + postId;
+            deleteForm.submit();
+        }
+    });
+</script>
