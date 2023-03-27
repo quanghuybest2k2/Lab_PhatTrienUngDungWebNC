@@ -26,42 +26,38 @@ namespace TatBlog.WebApp.Areas.Admin.Controllers
             _categoryValidator = postValidator;
         }
 
-        public async Task<IActionResult> Index(
-            CategoryFilterModel model,
-            [FromQuery(Name = "page")] int page = 1,
-            [FromQuery(Name = "page-size")] int pageSize = 10)
+        public async Task<IActionResult> Index(CategoryFilterModel model,
+                                              [FromQuery(Name = "p")] int pageNumber = 1,
+                                              [FromQuery(Name = "ps")] int pageSize = 10)
         {
-            _logger.LogInformation("Tạo điều kiện truy vấn");
-
             var categoryQuery = _mapper.Map<CategoryQuery>(model);
 
-            _logger.LogInformation("Lấy danh sách chủ đề từ CSDL");
+            ViewData["CategoriesList"] = await _blogRepository.GetCategoryByQueryAsync(categoryQuery, pageNumber, pageSize);
 
-            var pagingParams = new PagingParams()
+            ViewData["PagerQuery"] = new PagerQuery
             {
-                PageNumber = page,
-                PageSize = pageSize
+                Area = "Admin",
+                Controller = "Categories",
+                Action = "Index",
             };
-
-            ViewBag.CategoriesList = await _blogRepository.GetPagedCategoriesAsync(pagingParams);
-
-            _logger.LogInformation("Chuẩn bị dữ liệu cho ViewModel");
 
             return View(model);
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit(int id = 0)
+        public async Task<ActionResult> Edit(int id = 0)
         {
             var category = id > 0 ? await _blogRepository.GetCategoryByIdAsync(id) : null;
+
             var model = category == null ? new CategoryEditModel() : _mapper.Map<CategoryEditModel>(category);
 
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(CategoryEditModel model)
+        public async Task<ActionResult> Edit(CategoryEditModel model)
         {
+            var validator = HttpContext.RequestServices.GetService(typeof(IValidator<CategoryEditModel>));
             var validationResult = await _categoryValidator.ValidateAsync(model);
 
             if (!validationResult.IsValid)
@@ -70,15 +66,14 @@ namespace TatBlog.WebApp.Areas.Admin.Controllers
             }
 
             if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+                return View(model);
 
             var category = model.Id > 0 ? await _blogRepository.GetCategoryByIdAsync(model.Id) : null;
 
             if (category == null)
             {
                 category = _mapper.Map<Category>(model);
+
                 category.Id = 0;
             }
             else
@@ -86,16 +81,33 @@ namespace TatBlog.WebApp.Areas.Admin.Controllers
                 _mapper.Map(model, category);
             }
 
-            await _blogRepository.EditCategoryAsync(category);
+            await _blogRepository.AddOrUpdateCategoryAsync(category);
 
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> DeleteCategory(int id)
+        [HttpPost]
+        public async Task<ActionResult> VerifyCategorySlug(string urlSlug)
         {
-            await _blogRepository.DeleteCategoryAsync(id);
+            var slugExisted = await _blogRepository.IsCategorySlugExistedAsync(urlSlug);
 
-            return RedirectToAction("Index");
+            return slugExisted ? Json($"Slug '{urlSlug}' đã được sử dụng") : Json(true);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> ShowedChanged(int categoryId)
+        {
+            await _blogRepository.ChangedCategoryStatusAsync(categoryId);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> DeleteCategory(int id)
+        {
+            await _blogRepository.DeleteCategoryByIdAsync(id);
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

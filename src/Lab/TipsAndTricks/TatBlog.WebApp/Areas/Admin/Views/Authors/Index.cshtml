@@ -1,6 +1,112 @@
-﻿@{
-    ViewData["PageTitle"] = "Danh sách tác giả";
+﻿@using TatBlog.Services.Blogs;
+
+@{
+    ViewData["Title"] = "Danh sách tác giả";
+    var authorsList = ViewData["AuthorsList"] as IPagedList<Author>;
+    var pagerQuery = (ViewData["PagerQuery"] as PagerQuery) ?? new PagerQuery();
+    int index = 1;
 }
+
 <h1>
     Danh sách tác giả
 </h1>
+
+<partial name="_AuthorFilterPane" model="Model" />
+
+@if (authorsList?.Count > 0)
+{
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th scope="col">STT</th>
+                <th scope="col">Tên tác giả</th>
+                <th scope="col">URL Slug</th>
+                <th scope="col">Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var author in authorsList)
+            {
+                <tr>
+                    <td>@(index++)</td>
+                    <td>
+                        <a class="link-secondary text-decoration-none"
+                   asp-area="Admin"
+                   asp-controller="Authors"
+                   asp-action="Edit"
+                   asp-route-id="@author.Id">
+                            @author.FullName
+                        </a>
+                        <p class="text-muted">
+                            @author.Notes
+                        </p>
+                    </td>
+                    <td>
+                        @author.UrlSlug
+                    </td>
+                    <td>
+                        @author.Email
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <button type="button" value="@author.Id" class="btn btn-danger" data-bs-target="#deleteModal" data-bs-toggle="modal">
+                                Xóa
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <partial name="_Pager" model="@authorsList" />
+}
+else
+{
+    <h4 class="text-danger">
+        Không tìm thấy tác giả nào
+    </h4>
+}
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Xóa tác giả</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa tác giả này?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" id="btn-delete-author" class="btn btn-danger">Xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form method="post"
+      name="delete-author-form"
+      enctype="multipart/form-data"
+      asp-area="Admin"
+      asp-controller="Authors"
+      asp-action="DeleteAuthor">
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var authorId;
+        var deleteForm = document.forms['delete-author-form'];
+        var btnDeleteAuthor = document.getElementById('btn-delete-author');
+        $('#deleteModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            authorId = button.val();
+        });
+        btnDeleteAuthor.onclick = function () {
+            deleteForm.action += "/" + authorId;
+            deleteForm.submit();
+        }
+    });
+</script>

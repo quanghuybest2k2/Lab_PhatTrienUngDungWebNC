@@ -5,7 +5,10 @@
 }
 
 <h1>Thêm/Cập nhật thẻ</h1>
-
+<div class="container">
+    <div class="mb-3">
+        <label class="form-label">Thêm/Cập nhật thẻ</label>
+    </div>
 <form asp-area="Admin"
       asp-controller="Tags"
       asp-action="Edit"
@@ -13,22 +16,22 @@
       method="post">
     <div asp-validation-summary="ModelOnly"></div>
     <input type="hidden" asp-for="Id" />
-    <div class="row mb-3">
-        <label asp-for="Name" class="col-sm-2 col-form-label"></label>
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
         <div class="col-sm-10">
             <input type="text" class="form-control" asp-for="Name" />
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
     </div>
-    <div class="row mb-3">
-        <label asp-for="UrlSlug" class="col-sm-2 col-form-label"></label>
+    <div class="mb-3">
+        <label asp-for="UrlSlug" class="form-label"></label>
         <div class="col-sm-10">
             <input type="text" class="form-control" asp-for="UrlSlug" />
             <span asp-validation-for="UrlSlug" class="text-danger"></span>
         </div>
     </div>
-    <div class="row mb-3">
-        <label asp-for="Description" class="col-sm-2 col-form-label"></label>
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
         <div class="col-sm-10">
             <textarea class="form-control" asp-for="Description"></textarea>
             <span asp-validation-for="Description" class="text-danger"></span>
@@ -46,7 +49,7 @@
         </a>
     </div>
 </form>
-
+</div>
 @section scripts {
     <partial name="_ValidationScriptsPartial" />
 

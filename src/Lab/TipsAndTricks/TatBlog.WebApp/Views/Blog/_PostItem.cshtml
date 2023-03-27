@@ -1,9 +1,11 @@
-﻿@model Post
+﻿@using TatBlog.Services.Blogs;
+@model Post
 
 @{
     var imageUrl = string.IsNullOrWhiteSpace(Model.ImageUrl)
                 ? "/images/st.jpg"
                 : $"/{Model.ImageUrl}";
+    var pagerQuery = (ViewData["PagerQuery"] as PagerQuery) ?? new PagerQuery();
 }
 <article class="blog-entry mb-4">
     <div class="card">

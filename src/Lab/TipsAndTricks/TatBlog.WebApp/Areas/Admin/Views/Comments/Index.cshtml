@@ -1,88 +1,122 @@
 ﻿@using TatBlog.Core.Contracts;
 @using TatBlog.Core.Entities;
+@using TatBlog.Services.Blogs;
 @model TatBlog.WebApp.Areas.Admin.Models.CommentFilterModel
 
 @{
     ViewData["PageTitle"] = "Quản lý bình luận";
-    var commentsList = ViewBag.CommentsList as IPagedList<Comment>;
+    var commentList = ViewData["CommentsList"] as IPagedList<Comment>;
+    var pagerQuery = (ViewData["PagerQuery"] as PagerQuery) ?? new PagerQuery();
 }
 
 <h1>
     Danh sách bình luận
 </h1>
 
-<partial name="_CommentFilterPane" model=@Model />
+@if (Model != null)
+{
+    <partial name="_CommentFilterPane" model=@Model />
+}
 
-@if (commentsList != null && commentsList.Count > 0)
+@if (commentList != null && commentList.Count > 0)
 {
     <table class="table table-responsive table-striped">
         <thead>
             <tr class="row">
-                <th class="col-2">Tên người gửi</th>
-                <th class="col-4">Nội dung</th>
-                <th class="col-1">Ngày gửi</th>
-                <th class="col-1">Phê duyệt</th>
-                <th class="col-3">Bài viết</th>
-                <th class="col-1">Xóa</th>
+                <th scope="col">Tên độc giả</th>
+                <th scope="col">Thời gian bình luận</th>
+                <th scope="col">Bài viết</th>
+                <th scope="col">Phê duyệt</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var comment in commentsList)
+            @foreach (var comment in commentList)
             {
                 <tr class="row">
                     <td class="col-2">
-                        @comment.Name
+                        @comment.UserName
                     </td>
                     <td class="col-4">
-                        @comment.Description
+                        @comment.PostDate.ToString("dd/MM/yyyy")
                     </td>
                     <td class="col-1">
-                        @comment.PostedDate.ToString("dd/MM/yyyy")
+                        @comment.Content
                     </td>
                     <td class="col-1">
-                        @if (comment.IsApproved)
-                        {
-                            <a asp-area="Admin"
-                   asp-controller="Comments"
-                   asp-action="ChangeCommentApprovedState"
-                   asp-route-id=@comment.Id
-                   class="btn btn-primary">
-                                Có
-                            </a>
-                        }
-                        else
-                        {
-                            <a asp-area="Admin"
-                   asp-controller="Comments"
-                   asp-action="ChangeCommentApprovedState"
-                   asp-route-id=@comment.Id
-                   class="btn btn-secondary">
-                                Không
-                            </a>
-                        }
-                    </td>
-                    <td class="col-3">
                         @comment.Post.Title
                     </td>
-                    <td class="col-1">
-                        <a asp-area="Admin"
-                   asp-controller="Comments"
-                   asp-action="Delete"
-                   asp-route-id=@comment.Id
-                   onclick="return confirm('Bạn có thực sự muốn xóa bình luận này không?')"
-                   class="text-danger">
-                            Xóa
-                        </a>
+                    <td class="col-3">
+                        <form method="post"
+                      enctype="multipart/form-data"
+                      asp-area="Admin"
+                      asp-controller="Comments"
+                      asp-action="CensoredChanged">
+                            <input type="hidden" name="commentId" value="@comment.Id" />
+                            <div class="form-check">
+                                <input class="form-check-input"
+                               type="checkbox"
+                               onChange="this.form.submit()"
+                               @(comment.Censored ? "checked" : "") />
+                            </div>
+                        </form>
+                    </td>
+                    <td class="col-3">
+                        <div class="form-group">
+                            <button type="button" value="@comment.Id" class="btn btn-danger" data-bs-target="#deleteModal" data-bs-toggle="modal">
+                                Xóa
+                            </button>
+                        </div>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
-    <partial name="_PaginatePage" model=@commentsList />
+    <partial name="_PaginatePage" model=@commentList />
 }
 else
 {
-    <h1 class="text-danger">
+    <h4>
         Không tìm thấy bài viết nào
-    </h1>
+    </h4>
 }
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Xóa bình luận</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa bình luận này?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" id="btn-delete-comment" class="btn btn-danger">Xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
+<form method="post"
+      name="delete-comment-form"
+      enctype="multipart/form-data"
+      asp-area="Admin"
+      asp-controller="Comments"
+      asp-action="DeleteComment">
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var commentId;
+        var deleteForm = document.forms['delete-comment-form'];
+        var btnDeletedComment = document.getElementById('btn-delete-comment');
+        $('#deleteModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            commentId = button.val();
+        });
+        btnDeletedComment.onclick = function () {
+            deleteForm.action += "/" + commentId;
+            deleteForm.submit();
+        }
+    });
+</script>

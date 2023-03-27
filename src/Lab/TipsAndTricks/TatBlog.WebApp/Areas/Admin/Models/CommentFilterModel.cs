@@ -9,29 +9,34 @@ namespace TatBlog.WebApp.Areas.Admin.Models
         [DisplayName("Từ khóa")]
         public string Keyword { get; set; }
 
-        [DisplayName("Bài viết")]
-        public int? PostId { get; set; }
+        [DisplayName("Tên độc giả")]
+        public string UserName { get; set; }
 
         [DisplayName("Năm")]
-        public int? PostedYear { get; set; }
+        public int? Year { get; set; }
 
         [DisplayName("Tháng")]
-        public int? PostedMonth { get; set; }
+        public int? Month { get; set; }
 
-        [DisplayName("Chưa phê duyệt")]
-        public bool IsNotApproved { get; set; }
+        [DisplayName("Ngày")]
+        public int? Day { get; set; }
 
-        public IEnumerable<SelectListItem> PostList { get; set; }
+        [DisplayName("Bài viết")]
+        public string PostTitle { get; set; }
+
+        [DisplayName("Đã Phê duyệt")]
+        public bool Censored { get; set; }
+
         public IEnumerable<SelectListItem> MonthList { get; set; }
+
         public CommentFilterModel()
         {
             MonthList = Enumerable.Range(1, 12)
-                .Select(m => new SelectListItem()
-                {
-                    Value = m.ToString(),
-                    Text = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)
-                })
-                .ToList();
+                                  .Select(m => new SelectListItem()
+                                  {
+                                      Value = m.ToString(),
+                                      Text = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)
+                                  }).ToList();
         }
     }
 }

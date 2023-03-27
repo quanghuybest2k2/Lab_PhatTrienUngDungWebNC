@@ -16,11 +16,12 @@ namespace TatBlog.Core.Entities
     public class Subscriber : IEntity
     {
         public int Id { get; set; }
-        public string Email { get; set; }
-        public DateTime SubscribedDate { get; set; }
-        public DateTime? UnsubscribedDate { get; set; }
-        public SubscribeState SubscribeState { get; set; }
-        public string Reason { get; set; }
-        public string Notes { get; set; }
+        public string SubscribeEmail { get; set; }
+        public DateTime SubDated { get; set; }
+        public DateTime? UnSubDated { get; set; }
+        public string CancelReason { get; set; }
+        public bool ForceLock { get; set; }
+        public bool UnsubscribeVoluntary { get; set; }
+        public string AdminNotes { get; set; }
     }
 }

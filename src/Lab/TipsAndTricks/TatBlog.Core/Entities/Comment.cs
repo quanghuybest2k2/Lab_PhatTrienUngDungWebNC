@@ -10,12 +10,11 @@ namespace TatBlog.Core.Entities
     public class Comment : IEntity
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string Description { get; set; }
-        public DateTime PostedDate { get; set; }
-        public bool IsApproved { get; set; }
-        public int PostId { get; set; }
+        public string UserName { get; set; }
+        public string Content { get; set; }
+        public DateTime PostDate { get; set; }
+        public bool Censored { get; set; }
+        public int PostID { get; set; }
         public Post Post { get; set; }
     }
 }

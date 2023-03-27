@@ -14,11 +14,7 @@ namespace TatBlog.Services.Blogs
     {
         // Tìm bài viết có tên định danh là slug
         // và được đăng vào tháng 'month' năm 'year'
-        Task<Post> GetPostAsync(
-            int year,
-            int month,
-            string slug,
-            CancellationToken cancellationToken = default);
+        Task<Post> GetPostAsync(int year, int month, int day, string slug, CancellationToken cancellationToken = default);
         // Tìm Top N bai viết phổ biến được nhiều người xem nhất
         Task<IList<Post>> GetPopularArticlesAsync(
             int numPosts,
@@ -27,6 +23,12 @@ namespace TatBlog.Services.Blogs
         Task<bool> IsPostSlugExistedAsync(
             int postId, string slug,
             CancellationToken cancellationToken = default);
+        // kiem tra tag slug ton tai chua
+        Task<bool> IsTagSlugExistedAsync(string slug, CancellationToken cancellationToken = default);
+        // kiem tra category slug ton tai chua
+        Task<bool> IsCategorySlugExistedAsync(string slug, CancellationToken cancellationToken = default);
+        // kiem tra author slug ton tai chua
+        Task<bool> IsAuthorSlugExistedAsync(int id, string slug, CancellationToken cancellationToken = default);
         // Tăng số lượt xem của một bài viết
         Task IncreaseViewCountAsync(
             int postId,
@@ -127,5 +129,47 @@ namespace TatBlog.Services.Blogs
         IPagingParams pagingParams, CancellationToken cancellationToken = default);
         //
         Task<Tag> EditTagAsync(Tag newTag, CancellationToken cancellationToken = default);
+        //
+        Task<IPagedList<Author>> GetAuthorByQueryAsync(AuthorQuery query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default);
+        //
+        Task<Author> GetAuthorByIdAsync(int id, CancellationToken cancellationToken = default);
+        //
+        Task<bool> AddOrUpdateAuthorAsync(Author author, CancellationToken cancellationToken = default);
+        //
+        Task<bool> DeleteAuthorByIdAsync(int? id, CancellationToken cancellationToken = default);
+        //
+        Task<IPagedList<Category>> GetCategoryByQueryAsync(CategoryQuery query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default);
+        //
+        Task AddOrUpdateCategoryAsync(Category category, CancellationToken cancellationToken = default);
+        //
+        Task ChangedCategoryStatusAsync(int id, CancellationToken cancellationToken = default);
+        //
+        Task DeleteCategoryByIdAsync(int? id, CancellationToken cancellationToken = default);
+        //
+        Task<IPagedList<Comment>> GetCommentByQueryAsync(CommentQuery query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default);
+        //
+        Task ChangeCommentStatusAsync(int id, CancellationToken cancellationToken = default);
+        //
+        Task<bool> DeleteCommentByIdAsync(int? id, CancellationToken cancellationToken = default);
+        //
+        Task<int> TotalPostsAsync();
+        //
+        Task<int> TotalUnpublishedPostsAsync();
+        //
+        Task<int> TotalCategoriesAsync();
+        //
+        Task<int> TotalAuthorsAsync();
+        //
+        Task<int> TotalWaitingApprovalCommentAsync();
+        //
+        Task<int> TotalSubscriberAsync();
+        //
+        Task<int> TotalNewerSubscribeDayAsync();
+        //
+        Task<IPagedList<Subscriber>> GetSubscriberByQueryAsync(SubscriberQuery query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default);
+        //
+        Task<bool> DeleteSubscriberAsync(int id, CancellationToken cancellationToken = default);
+        //
+        Task<IPagedList<Comment>> GetCommentPostIdAsync(int postId, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default);
     }
 }

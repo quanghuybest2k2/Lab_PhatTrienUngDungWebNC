@@ -1,30 +1,33 @@
-﻿@model TatBlog.WebApp.Areas.Admin.Models.TagFilterModel
+﻿@using TatBlog.Services.Blogs;
+@model TatBlog.WebApp.Areas.Admin.Models.TagFilterModel
+@{
+    var viewData = ViewData["PagerQuery"] as PagerQuery ?? new PagerQuery { Area = "Admin", Controller = "Posts", Action = "Index" };
+}
 
-<form asp-area="Admin"
-      asp-controller="Tags"
-      asp-action="Index"
-      method="get"
-      class="row gy-2 gx-3 align-items-center">
-    <div class="col-auto">
-        <label asp-for="Keyword" class="visually-hidden"></label>
-        <input type="text"
-               asp-for="Keyword"
-               class="form-control"
-               placeholder="Nhập từ khóa" />
-    </div>
-    <div class="col-auto">
-        <button type="submit" class="btn btn-primary">Tìm/Lọc</button>
-        <a asp-area="Admin"
-           asp-controller="Tags"
-           asp-action="Index"
-           class="btn btn-warning">
-            Bỏ lọc
-        </a>
-        <a asp-area="Admin"
-           asp-controller="Tags"
-           asp-action="Edit"
-           class="btn btn-success">
-            Thêm mới
-        </a>
-    </div>
-</form>
+<div class="mb-4">
+    <form method="get"
+          class="row gy-2 gx-3 align-items-center"
+          asp-area="@viewData.Area"
+          asp-controller="@viewData.Controller"
+          asp-action="@viewData.Action">
+        <div class="col-auto">
+            <label class="visually-hidden" asp-for="Keyword"></label>
+            <input type="text" class="form-control" placeholder="Nhập từ khóa để tìm kiếm..." asp-for="Keyword">
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Tìm/lọc</button>
+            <a class="btn btn-info"
+               asp-area="@viewData.Area"
+               asp-controller="@viewData.Controller"
+               asp-action="Index">
+                Bỏ lọc
+            </a>
+            <a class="btn btn-success"
+               asp-area="@viewData.Area"
+               asp-controller="@viewData.Controller"
+               asp-action="Edit">
+                Thêm mới
+            </a>
+        </div>
+    </form>
+</div>

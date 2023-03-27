@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TatBlog.Core.Contracts;
+using TatBlog.Core.Entities;
 using TatBlog.Services;
 using TatBlog.Services.Blogs;
 using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
@@ -66,18 +67,31 @@ namespace TatBlog.WebApp.Controllers
             ViewBag.PostQuery = postQuery;
             return View("Index", authors);
         }
-        public async Task<IActionResult> Post(int year = 2022, int month = 1, int day = 1, string slug = "")
+        public async Task<IActionResult> Post(
+                            int year = 2023,
+                            int month = 1,
+                            int day = 1,
+                            string slug = null)
         {
-            var postQuery = new PostQuery()
+            if (slug == null) return NotFound();
+
+            var post = await _blogRepository.GetPostAsync(year, month, day, slug);
+
+            if (post == null) return Content("Không tìm thấy bài viết nào");
+
+            if (!post.Published)
             {
-                Year = year,
-                Month = month,
-                Day = day,
-                TagSlug = slug
-            };
-            var posts = await _blogRepository.GetPagedPostsAsync(postQuery);
-            ViewBag.PostQuery = postQuery;
-            return View("Index", posts);
+                ModelState.AddModelError("denied access", "Bài viết này không được phép truy cập");
+                return View();
+            }
+            else
+            {
+                await _blogRepository.IncreaseViewCountAsync(post.Id);
+            }
+
+            ViewData["Comments"] = await _blogRepository.GetCommentPostIdAsync(post.Id);
+
+            return View(post);
         }
         public async Task<IActionResult> Archives(int year, int month, [FromQuery(Name = "p")] int pageNumber = 1,
            [FromQuery(Name = "ps")] int pageSize = 5)
