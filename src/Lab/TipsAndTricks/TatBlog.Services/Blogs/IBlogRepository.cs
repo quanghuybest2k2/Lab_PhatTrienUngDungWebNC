@@ -171,5 +171,10 @@ namespace TatBlog.Services.Blogs
         Task<bool> DeleteSubscriberAsync(int id, CancellationToken cancellationToken = default);
         //
         Task<IPagedList<Comment>> GetCommentPostIdAsync(int postId, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default);
+        //
+        Task<IPagedList<T>> GetPagedPostsAsync<T>(
+                 PostQuery condition,
+                 IPagingParams pagingParams,
+                 Func<IQueryable<Post>, IQueryable<T>> mapper);
     }
 }
