@@ -21,40 +21,42 @@ namespace TatBlog.WebApi.Endpoints
 
             routeGroupBuilder.MapGet("/", GetAuthors)
                             .WithName("GetAuthors")
-                            .Produces<PaginationResult<AuthorItem>>();
+                            .Produces<ApiResponse<PaginationResult<AuthorItem>>>();
             routeGroupBuilder.MapGet("/{id:int}", GetAuthorDetails)
                          .WithName("GetAuthorById")
-                         .Produces<AuthorItem>()
+                         .Produces<ApiResponse<AuthorItem>>()
                          .Produces(404);
 
             routeGroupBuilder.MapGet("/{slug::regex(^[a-z0-9_-]+$)}/posts", GetPostByAuthorSlug)
                              .WithName("GetPostByAuthorSlug")
-                             .Produces<PaginationResult<PostDto>>();
+                             .Produces<ApiResponse<PaginationResult<PostDto>>>();
 
             routeGroupBuilder.MapPost("/", AddAuthor)
-                             .WithName("AddNewAuthor")
                              .AddEndpointFilter<ValidatorFilter<AuthorEditModel>>()
-                             .Produces(201)
-                             .Produces(400)
-                             .Produces(409);
+                             .WithName("AddNewAuthor")
+                             .RequireAuthorization()
+                             .Produces(401)
+                             .Produces<ApiResponse<AuthorItem>>();
 
             routeGroupBuilder.MapPut("/{id:int}", UpdateAuthor)
                              .WithName("UpdateAuthor")
                              .AddEndpointFilter<ValidatorFilter<AuthorEditModel>>()
-                             .Produces(204)
-                             .Produces(400)
-                             .Produces(409);
+                             .RequireAuthorization()
+                             .Produces(401)
+                             .Produces<ApiResponse<string>>();
 
             routeGroupBuilder.MapDelete("/{id:int}", DeleteAuthor)
                              .WithName("DeleteAuthor")
-                             .Produces(204)
-                             .Produces(404);
+                             .RequireAuthorization()
+                             .Produces(401)
+                             .Produces<ApiResponse<string>>();
 
-            routeGroupBuilder.MapPost("/{id:int}/avatar", SetAuthorPicture)
+            routeGroupBuilder.MapPost("/{id:int}/picture", SetAuthorPicture)
                              .WithName("SetAuthorPicture")
-                             .Accepts<IFormFile>("multipart/formdata")
-                             .Produces<string>()
-                             .Produces(400);
+                             .RequireAuthorization()
+                             .Accepts<IFormFile>("multipart/form-data")
+                             .Produces(401)
+                             .Produces<ApiResponse<string>>();
             routeGroupBuilder.MapGet("/best/{limit:int}", GetBestAuthorsAsync)
                          .WithName("GetBestAuthors")
                          .Produces<PagedList<Author>>();
