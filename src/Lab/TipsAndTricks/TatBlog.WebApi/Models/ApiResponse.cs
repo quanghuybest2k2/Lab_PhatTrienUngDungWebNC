@@ -15,7 +15,7 @@ public class ApiResponse
         Errors = new List<string>();
     }
 
-    protected static ApiResponse<T> Success<T>(T result, HttpStatusCode statusCode = HttpStatusCode.OK)
+    public  static ApiResponse<T> Success<T>(T result, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
         return new ApiResponse<T>
         {
