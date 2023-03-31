@@ -148,6 +148,10 @@ namespace TatBlog.Services.Blogs
         //
         Task<IPagedList<Comment>> GetCommentByQueryAsync(CommentQuery query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default);
         //
+        Task<IPagedList<Comment>> GetCommentByQueryAsync(CommentQuery query, IPagingParams pagingParams, CancellationToken cancellationToken = default);
+        //
+        Task<IPagedList<T>> GetCommentByQueryAsync<T>(CommentQuery query, IPagingParams pagingParams, Func<IQueryable<Comment>, IQueryable<T>> mapper, CancellationToken cancellationToken = default);
+        //
         Task ChangeCommentStatusAsync(int id, CancellationToken cancellationToken = default);
         //
         Task<bool> DeleteCommentByIdAsync(int? id, CancellationToken cancellationToken = default);
@@ -170,11 +174,15 @@ namespace TatBlog.Services.Blogs
         //
         Task<bool> DeleteSubscriberAsync(int id, CancellationToken cancellationToken = default);
         //
-        Task<IPagedList<Comment>> GetCommentPostIdAsync(int postId, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default);
-        //
         Task<IPagedList<T>> GetPagedPostsAsync<T>(
                  PostQuery condition,
                  IPagingParams pagingParams,
                  Func<IQueryable<Post>, IQueryable<T>> mapper);
+        //
+        Task<Author> GetCachedPostByIdAsync(int postId);
+        //
+        Task<bool> SetImageUrlAsync(
+       int id, string imageUrl,
+       CancellationToken cancellationToken = default);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using SlugGenerator;
 using System.Linq.Dynamic.Core;
 using TatBlog.Core.Contracts;
@@ -13,9 +14,11 @@ namespace TatBlog.Services.Blogs
     public class BlogRepository : IBlogRepository
     {
         private readonly BlogDbContext _context;
-        public BlogRepository(BlogDbContext context)
+        private readonly IMemoryCache _memoryCache;
+        public BlogRepository(BlogDbContext context, IMemoryCache memoryCache)
         {
             _context = context;
+            _memoryCache = memoryCache;
         }
         // Lấy danh sách chuyên mục và số lượng bài viết nằm thuộc từng chuyên mục/chủ đề
         public async Task<IList<CategoryItem>> GetCategoriesAsync(bool showOnMenu = false, CancellationToken cancellationToken = default)
@@ -408,7 +411,7 @@ namespace TatBlog.Services.Blogs
                 posts = posts.Where(x => x.Published);
             }
 
-            if (condition.NotPublished)
+            if (condition.UnPublished)
             {
                 posts = posts.Where(x => !x.Published);
             }
@@ -871,6 +874,17 @@ namespace TatBlog.Services.Blogs
                                               "DESC",
                                               cancellationToken);
         }
+        public async Task<IPagedList<Comment>> GetCommentByQueryAsync(CommentQuery query, IPagingParams pagingParams, CancellationToken cancellationToken = default)
+        {
+            return await FilterComment(query).ToPagedListAsync(pagingParams, cancellationToken);
+        }
+
+        public async Task<IPagedList<T>> GetCommentByQueryAsync<T>(CommentQuery query, IPagingParams pagingParams, Func<IQueryable<Comment>, IQueryable<T>> mapper, CancellationToken cancellationToken = default)
+        {
+            IQueryable<T> result = mapper(FilterComment(query));
+
+            return await result.ToPagedListAsync(pagingParams, cancellationToken);
+        }
         private IQueryable<Comment> FilterComment(CommentQuery query)
         {
             IQueryable<Comment> commentQuery = _context.Set<Comment>()
@@ -1017,20 +1031,7 @@ namespace TatBlog.Services.Blogs
 
             return affected > 0;
         }
-        // comment data
-        public async Task<IPagedList<Comment>> GetCommentPostIdAsync(int postId, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
-        {
-            var commentQuery = _context.Set<Comment>()
-                                           .Where(c => c.PostID.Equals(postId));
 
-            commentQuery = commentQuery.Where(c => c.Censored);
-
-            return await commentQuery.ToPagedListAsync(pageNumber,
-                                                       pageSize,
-                                                       nameof(Comment.PostDate),
-                                                       "DESC",
-                                                       cancellationToken);
-        }
         //
         public async Task<IPagedList<T>> GetPagedPostsAsync<T>(
             PostQuery condition,
@@ -1041,6 +1042,28 @@ namespace TatBlog.Services.Blogs
             var projectedPosts = mapper(posts);
 
             return await projectedPosts.ToPagedListAsync(pagingParams);
+        }
+        // lay chi tiet bài viết
+        public async Task<Author> GetCachedPostByIdAsync(int postId)
+        {
+            return await _memoryCache.GetOrCreateAsync(
+                $"author.by-id.{postId}",
+                async (entry) =>
+                {
+                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
+                    return await GetAuthorByIdAsync(postId);
+                });
+        }
+        // set avatar
+        public async Task<bool> SetImageUrlAsync(
+       int id, string imageUrl,
+       CancellationToken cancellationToken = default)
+        {
+            return await _context.Posts
+                .Where(x => x.Id == id)
+                .ExecuteUpdateAsync(x =>
+                    x.SetProperty(a => a.ImageUrl, a => imageUrl),
+                    cancellationToken) > 0;
         }
     }
 }

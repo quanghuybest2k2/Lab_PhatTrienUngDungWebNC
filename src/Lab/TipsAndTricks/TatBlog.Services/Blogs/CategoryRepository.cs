@@ -1,10 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TatBlog.Core.Contracts;
 using TatBlog.Core.DTO;
 using TatBlog.Core.Entities;
@@ -82,6 +77,14 @@ namespace TatBlog.Services.Blogs
             }
 
             return await _context.SaveChangesAsync(cancellationToken) > 0;
+        }
+        // xoa
+        public async Task<bool> DeleteCategoryAsync(
+            int id, CancellationToken cancellationToken = default)
+        {
+            return await _context.Authors
+                .Where(x => x.Id == id)
+                .ExecuteDeleteAsync(cancellationToken) > 0;
         }
     }
 }
