@@ -27,17 +27,25 @@ namespace TatBlog.WebApi.Extensions
                 .AddScoped<IAuthorRepository, AuthorRepository>();
             builder.Services
                 .AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services
+              .AddScoped<ICommentRepository, CommentRepository>();
+            builder.Services
+                .AddScoped<ITagRepository, TagRepository>();
+            builder.Services
+                .AddScoped<ISubscriberRepository, SubscriberRepository>();
+            //builder.Services
+            //    .AddScoped<IDashboardRepository, DashboardRepository>();
             return builder;
         }
         public static WebApplicationBuilder ConfigureCors(this WebApplicationBuilder builder)
         {
             builder.Services.AddCors(options =>
             {
-             options.AddPolicy("TatBlogApp", policyBuilder =>
-            policyBuilder
-            .AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod());
+                options.AddPolicy("TatBlogApp", policyBuilder =>
+               policyBuilder
+               .AllowAnyOrigin()
+               .AllowAnyHeader()
+               .AllowAnyMethod());
             });
             return builder;
         }

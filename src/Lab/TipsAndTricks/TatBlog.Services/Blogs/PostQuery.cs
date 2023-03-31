@@ -18,9 +18,10 @@ namespace TatBlog.Services.Blogs
         public int Year { get; set; }
         public int Month { get; set; }
         public int Day { get; set; }
+        public string PostSlug { get; set; }
         public bool PublishedOnly { get; set; } = true;
         public string Keyword { get; set; }
         public string TitleSlug { get; set; }
-        public bool NotPublished { get; set; }
+        public bool UnPublished { get; set; }
     }
 }

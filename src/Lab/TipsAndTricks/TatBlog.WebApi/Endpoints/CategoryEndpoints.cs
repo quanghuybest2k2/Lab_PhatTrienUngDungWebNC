@@ -38,28 +38,18 @@ namespace TatBlog.WebApi.Endpoints
                              .Produces(401)
                              .Produces<ApiResponse<CategoryItem>>();
 
-            //routeGroupBuilder.MapPut("/{id:int}", UpdateAuthor)
-            //                 .WithName("UpdateAuthor")
-            //                 .AddEndpointFilter<ValidatorFilter<AuthorEditModel>>()
-            //                 .RequireAuthorization()
-            //                 .Produces(401)
-            //                 .Produces<ApiResponse<string>>();
+            routeGroupBuilder.MapPut("/{id:int}", UpdateCategory)
+                             .WithName("UpdateCategory")
+                             .AddEndpointFilter<ValidatorFilter<CategoryEditModel>>()
+                             .RequireAuthorization()
+                             .Produces(401)
+                             .Produces<ApiResponse<string>>();
 
-            //routeGroupBuilder.MapDelete("/{id:int}", DeleteAuthor)
-            //                 .WithName("DeleteAuthor")
-            //                 .RequireAuthorization()
-            //                 .Produces(401)
-            //                 .Produces<ApiResponse<string>>();
-
-            //routeGroupBuilder.MapPost("/{id:int}/picture", SetAuthorPicture)
-            //                 .WithName("SetAuthorPicture")
-            //                 .RequireAuthorization()
-            //                 .Accepts<IFormFile>("multipart/form-data")
-            //                 .Produces(401)
-            //                 .Produces<ApiResponse<string>>();
-            //routeGroupBuilder.MapGet("/best/{limit:int}", GetBestAuthorsAsync)
-            //             .WithName("GetBestAuthors")
-            //             .Produces<PagedList<Author>>();
+            routeGroupBuilder.MapDelete("/{id:int}", DeleteCategory)
+                             .WithName("DeleteCategory")
+                             .RequireAuthorization()
+                             .Produces(401)
+                             .Produces<ApiResponse<string>>();
 
             return app;
         }
@@ -109,6 +99,26 @@ namespace TatBlog.WebApi.Endpoints
             await categoryRepository.AddOrUpdateAsync(category);
 
             return Results.Ok(ApiResponse.Success(mapper.Map<CategoryItem>(category), HttpStatusCode.Created));
+        }
+        // cap nhat
+        private static async Task<IResult> UpdateCategory(int id, CategoryEditModel model, IValidator<CategoryEditModel> validator, ICategoryRepository categoryRepository, IMapper mapper)
+        {
+            if (await categoryRepository.IsCategorySlugExistedAsync(id, model.UrlSlug))
+            {
+                return Results.Ok(ApiResponse.Fail(HttpStatusCode.Conflict, $"Slug '{model.UrlSlug}' đã được sử dụng"));
+            }
+
+            var category = mapper.Map<Category>(model);
+            category.Id = id;
+
+            return await categoryRepository.AddOrUpdateAsync(category) ? Results.Ok(ApiResponse.Success("Category is updated", HttpStatusCode.NoContent)) : Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, $"Cound not find category"));
+
+        }
+        // xoa
+        private static async Task<IResult> DeleteCategory(int id, ICategoryRepository categoryRepository)
+        {
+            return await categoryRepository.DeleteCategoryAsync(id) ? Results.Ok(ApiResponse.Success("Category is deleted", HttpStatusCode.NoContent)) : Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, $"Could not find category"));
+
         }
     }
 }
