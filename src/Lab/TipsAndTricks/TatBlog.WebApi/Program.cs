@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Builder;
 using TatBlog.WebApi.Endpoints;
 using TatBlog.WebApi.Extensions;
 using TatBlog.WebApi.Mapsters;
@@ -20,5 +21,6 @@ var app = builder.Build();
     app.SetupRequestPipeline();
     // configure API endpoints
     app.MapAuthorEndpoints();
+    app.MapCategoryEndpoints();
     app.Run();
 }

@@ -1,9 +1,7 @@
 ﻿using FluentValidation;
-using FluentValidation.AspNetCore;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 using TatBlog.Core.Collections;
 using TatBlog.Core.DTO;
@@ -24,6 +22,7 @@ namespace TatBlog.WebApi.Endpoints
             routeGroupBuilder.MapGet("/", GetAuthors)
                             .WithName("GetAuthors")
                             .Produces<ApiResponse<PaginationResult<AuthorItem>>>();
+
             routeGroupBuilder.MapGet("/{id:int}", GetAuthorDetails)
                          .WithName("GetAuthorById")
                          .Produces<ApiResponse<AuthorItem>>()
