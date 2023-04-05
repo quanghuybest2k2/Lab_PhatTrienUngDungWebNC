@@ -89,7 +89,7 @@ namespace TatBlog.WebApp.Controllers
                 await _blogRepository.IncreaseViewCountAsync(post.Id);
             }
 
-            ViewData["Comments"] = await _blogRepository.GetCommentPostIdAsync(post.Id);
+            //ViewData["Comments"] = await _blogRepository.GetCommentPostIdAsync(post.Id);
 
             return View(post);
         }
