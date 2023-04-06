@@ -19,7 +19,7 @@
         public string ImageUrl { get; set; }
 
         // Số lượt xem, đọc bài viết
-        public int ViewCount { get; set; }
+        public int PostCount { get; set; }
 
         // Ngày giờ đăng bài
         public DateTime PostedDate { get; set; }

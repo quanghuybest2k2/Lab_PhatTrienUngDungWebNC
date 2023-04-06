@@ -20,6 +20,7 @@ const Index = () => {
 
     useEffect(() => {
         document.title = "Trang chủ";
+
         getPosts(k, ps, p).then((data) => {
             if (data) {
                 setPostList(data.items);
