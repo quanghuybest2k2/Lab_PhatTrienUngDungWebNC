@@ -3,6 +3,10 @@ import SearchForm from "./SearchForm";
 import CategoriesWidget from "./CategoriesWidget";
 import NewsletterForm from "./NewsletterForm";
 import FeaturedPostWidget from "./FeaturedPostWidget";
+import RandomPostsWidget from "./RandomPostsWidget";
+import BestAuthorsWidget from "./BestAuthorsWidget";
+import TagCloudWidget from "./TagCloudWidget";
+import ArchivesWidget from "./ArchivesWidget";
 
 const Sidebar = () => {
     return (
@@ -10,8 +14,11 @@ const Sidebar = () => {
             <SearchForm />
             <CategoriesWidget />
             <FeaturedPostWidget />
+            <RandomPostsWidget />
+            <BestAuthorsWidget />
+            <TagCloudWidget />
+            <ArchivesWidget />
             <NewsletterForm />
-            <h1>Tag cloud</h1>
         </div>
     );
 };

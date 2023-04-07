@@ -49,7 +49,7 @@ const PostList = ({ postItem }) => {
                                 <TagList tagList={postItem.tags} />
                             </div>
                             <div className='text-end'>
-                                <Link to={`/blog/post/${postedDate.getFullYear()}/${postedDate.getMonth()}/${postedDate.getDay()}/${postItem.urlSlug}`}
+                                <Link to={`/blog/post/${postedDate.getFullYear()}/${postedDate.getMonth() + 1}/${postedDate.getDate()}/${postItem.urlSlug}`}
                                     className='btn btn-primary'
                                     title={postItem.title}>
                                     Xem chi tiết

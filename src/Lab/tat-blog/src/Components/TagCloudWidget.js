@@ -1,35 +1,35 @@
 import { useState, useEffect } from "react";
 import ListGroup from "react-bootstrap/ListGroup";
 import { Link } from "react-router-dom";
-import { getFeaturedPosts } from "../Services/Widget";
+import { getTagCloud } from "../Services/Widget";
 
-const FeaturedPostWidget = () => {
-    const [featuredPost, setfeaturedPostList] = useState([]);
+const TagCloudWidget = () => {
+    const [tagCloud, setTagCloud] = useState([]);
 
     useEffect(() => {
-        getFeaturedPosts().then((data) => {
+        getTagCloud().then((data) => {
             if (data) {
-                setfeaturedPostList(data);
+                setTagCloud(data.items);
             } else {
-                setfeaturedPostList([]);
+                setTagCloud([]);
             }
         });
     }, []);
 
     return (
         <div className="mb-4">
-            <h4 className="text-success mb-2">Top 3 bài viết xem nhiều nhất</h4>
-            {featuredPost.length > 0 && (
+            <h4 className="text-success mb-2">Tag Cloud</h4>
+            {tagCloud.length > 0 && (
                 <ListGroup>
-                    {featuredPost.map((item, index) => {
+                    {tagCloud.map((item, index) => {
                         return (
                             <ListGroup.Item key={index}>
                                 <Link
-                                    to={`/blog/post/${item.urlSlug}`}
-                                    title={item.title}
+                                    to={`/blog/tag?slug=${item.urlSlug}`}
+                                    title={item.name}
                                     key={index}
                                 >
-                                    {item.title}
+                                    {item.name}
                                 </Link>
                             </ListGroup.Item>
                         );
@@ -40,4 +40,4 @@ const FeaturedPostWidget = () => {
     );
 };
 
-export default FeaturedPostWidget;
+export default TagCloudWidget;
