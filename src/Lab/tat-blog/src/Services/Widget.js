@@ -17,3 +17,21 @@ export async function getCategories() {
         return null;
     }
 }
+export async function getFeaturedPosts() {
+    try {
+        const response = await axios.get(
+            //https://localhost:44309/api/posts/featured/2
+            `https://localhost:44309/api/posts/featured/2`
+        );
+        const data = response.data;
+
+        if (data.isSuccess) {
+            return data.result;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.log("Error", error.message);
+        return null;
+    }
+}
