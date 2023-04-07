@@ -21,11 +21,25 @@ const PostList = ({ postItem }) => {
                             <Card.Text>
                                 <small className='text-muted'>Tác giả:</small>
                                 <span className='text-primary m-1'>
-                                    {postItem.author.fullName}
+                                    {/* https://localhost:44309/api/authors/jason-mouth/posts?PageSize=10&PageNumber=1 */}
+                                    <Link
+                                        to={`/blog/authors/${postItem.author.urlSlug}`}
+                                        title={postItem.author.description}
+                                        key={postItem.author}
+                                    >
+                                        {postItem.author.fullName}
+                                    </Link>
                                 </span>
                                 <small className='text-muted'>Chủ đề:</small>
                                 <span className='text-primary m-1'>
-                                    {postItem.category.name}
+                                    <Link
+                                        to={`/blog/category/${postItem.category.urlSlug}`}
+                                        title={postItem.category.description}
+                                        key={postItem.category}
+                                    >
+                                        {postItem.category.name}
+                                        {/* <span>&nbsp;({postItem.category.postCount})</span> */}
+                                    </Link>
                                 </span>
                             </Card.Text>
                             <Card.Text>
@@ -35,7 +49,7 @@ const PostList = ({ postItem }) => {
                                 <TagList tagList={postItem.tags} />
                             </div>
                             <div className='text-end'>
-                                <Link to={`/blog/post?year=${postedDate.getFullYear()}&month=${postedDate.getMonth()}&day=${postedDate.getDay()}&slug=${postItem.urlSlug}`}
+                                <Link to={`/blog/post/${postedDate.getFullYear()}/${postedDate.getMonth()}/${postedDate.getDay()}/${postItem.urlSlug}`}
                                     className='btn btn-primary'
                                     title={postItem.title}>
                                     Xem chi tiết

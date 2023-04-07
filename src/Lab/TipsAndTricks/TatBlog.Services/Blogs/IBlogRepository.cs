@@ -16,9 +16,7 @@ namespace TatBlog.Services.Blogs
         // và được đăng vào tháng 'month' năm 'year'
         Task<Post> GetPostAsync(int year, int month, int day, string slug, CancellationToken cancellationToken = default);
         // Tìm Top N bai viết phổ biến được nhiều người xem nhất
-        Task<IList<Post>> GetPopularArticlesAsync(
-            int numPosts,
-            CancellationToken cancellationToken = default);
+        Task<IList<Post>> GetPopularArticlesAsync(int numPosts, CancellationToken cancellationToken = default);
         // Kiếm tra xem tên định danh của bài viết đã có hay chưa
         Task<bool> IsPostSlugExistedAsync(
             int postId, string slug,

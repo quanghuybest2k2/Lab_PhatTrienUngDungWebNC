@@ -2,6 +2,7 @@
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using System.Net;
 using TatBlog.Core.Collections;
 using TatBlog.Core.DTO;
@@ -75,11 +76,12 @@ namespace TatBlog.WebApi.Endpoints
             return Results.Ok(ApiResponse.Success(paginationResult));
         }
         // lay top n bai viet xem nhieu nhat
-        private static async Task<IResult> GetPopularArticles(int limit, IBlogRepository blogRepository)
+        private static async Task<IResult> GetPopularArticles(int limit, IBlogRepository blogRepository, IMapper mapper)
         {
             var postsFeatured = await blogRepository.GetPopularArticlesAsync(limit);
+            var postsDto = postsFeatured.Select(p => mapper.Map<PostDto>(p)).ToList();
 
-            return Results.Ok(ApiResponse.Success(postsFeatured));
+            return Results.Ok(ApiResponse.Success(postsDto));
         }
         // lay ngau nhien
         private static async Task<IResult> GetPostRandoms(int limit, IBlogRepository blogRepository)

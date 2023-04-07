@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
-const TagList = (tagList) => {
-    if (tagList && Array.isArray(tagList) && tagList.length > 0)
+const TagList = ({ tagList }) => {
+    if (tagList && Array.isArray(tagList) && tagList.length > 0) {
         return (
             <>
                 {tagList.map((item, index) => {
@@ -16,10 +16,9 @@ const TagList = (tagList) => {
                         </Link>
                     );
                 })}
-                ;
             </>
         );
-    else {
+    } else {
         return (
             <>
                 <p>Không có thẻ nào cả!</p>
