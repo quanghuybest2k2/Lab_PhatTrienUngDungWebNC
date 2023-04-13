@@ -20,6 +20,8 @@
 
         // Số lượt xem, đọc bài viết
         public int PostCount { get; set; }
+        // Xuất bản
+        public bool PublishedOnly { get; set; }
 
         // Ngày giờ đăng bài
         public DateTime PostedDate { get; set; }
