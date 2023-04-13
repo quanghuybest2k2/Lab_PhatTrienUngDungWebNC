@@ -43,6 +43,7 @@ namespace TatBlog.WebApi.Endpoints
             routeGroupBuilder.MapPost("/", AddPost)
                              .AddEndpointFilter<ValidatorFilter<PostEditModel>>()
                              .WithName("AddPost")
+                             .Accepts<PostEditModel>("multipart/form-data")
                              .RequireAuthorization()
                              .Produces(401)
                              .Produces<ApiResponse<PostItem>>();
@@ -113,7 +114,7 @@ namespace TatBlog.WebApi.Endpoints
 
         //}
         // them post
-        private static async Task<IResult> AddPost(PostEditModel model, IValidator<PostEditModel> validator, IBlogRepository blogRepository, IMapper mapper)
+        private static async Task<IResult> AddPost(HttpContext context, PostEditModel model, IValidator<PostEditModel> validator, IBlogRepository blogRepository, IMapper mapper, IMediaManager mediaManager)
         {
             if (await blogRepository.IsAuthorSlugExistedAsync(0, model.UrlSlug))
             {
