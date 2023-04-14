@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 using Mapster;
 using MapsterMapper;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using SlugGenerator;
 using System.Net;
 using TatBlog.Core.Collections;
 using TatBlog.Core.DTO;
@@ -21,8 +21,8 @@ namespace TatBlog.WebApi.Endpoints
             var routeGroupBuilder = app.MapGroup("/api/posts");
 
             routeGroupBuilder.MapGet("/", GetPosts)
-                            .WithName("GetPosts")
-                            .Produces<ApiResponse<PaginationResult<Post>>>();
+                  .WithName("GetPosts")
+                  .Produces<ApiResponse<PaginationResult<PostDto>>>();
 
             routeGroupBuilder.MapGet("/featured/{limit:int}", GetPopularArticles)
                          .WithName("GetPopularArticles")
@@ -41,12 +41,11 @@ namespace TatBlog.WebApi.Endpoints
                        .Produces<ApiResponse<AuthorItem>>()
                        .Produces(404);
             routeGroupBuilder.MapPost("/", AddPost)
-                             .AddEndpointFilter<ValidatorFilter<PostEditModel>>()
-                             .WithName("AddPost")
-                             .Accepts<PostEditModel>("multipart/form-data")
-                             .RequireAuthorization()
-                             .Produces(401)
-                             .Produces<ApiResponse<PostItem>>();
+                      .WithName("AddNewPost")
+                      .Accepts<PostEditModel>("multipart/form-data")
+                      .Produces(401)
+                      .Produces<ApiResponse<PostItem>>();
+
             routeGroupBuilder.MapPost("/{id:int}/picture", SetPostPicture)
                             .WithName("SetPostPicture")
                             .RequireAuthorization()
@@ -64,18 +63,35 @@ namespace TatBlog.WebApi.Endpoints
                        .WithName("GetCommentPost")
                        .Produces(401)
                        .Produces<ApiResponse<PaginationResult<Comment>>>();
+            routeGroupBuilder.MapGet("/get-posts-filter", GetFilteredPosts)
+                .WithName("GetFilteredPost")
+                .Produces<ApiResponse<PostDto>>();
+            routeGroupBuilder.MapGet("/get-filter", GetFilter)
+                .WithName("GetFilter")
+                .Produces<ApiResponse<PostFilterModel>>();
 
             return app;
         }
+        //private static async Task<IResult> GetPosts([AsParameters] PostFilterModel model, IBlogRepository blogRepository, IMapper mapper)
+        //{
+        //    var postQuery = mapper.Map<PostQuery>(model);
+        //    var postList = await blogRepository.GetPagedPostsAsync(postQuery, model, post => post.ProjectToType<PostDto>());
+
+        //    var paginationResult = new PaginationResult<PostDto>(postList);
+
+        //    return Results.Ok(ApiResponse.Success(paginationResult));
+        //}
+
         private static async Task<IResult> GetPosts([AsParameters] PostFilterModel model, IBlogRepository blogRepository, IMapper mapper)
         {
             var postQuery = mapper.Map<PostQuery>(model);
-            var postList = await blogRepository.GetPagedPostsAsync(postQuery, model, post => post.ProjectToType<PostDto>());
+            var postsList = await blogRepository.GetPostByQueryAsync(postQuery, model, posts => posts.ProjectToType<PostDto>());
 
-            var paginationResult = new PaginationResult<PostDto>(postList);
+            var paginationResult = new PaginationResult<PostDto>(postsList);
 
             return Results.Ok(ApiResponse.Success(paginationResult));
         }
+
         // lay top n bai viet xem nhieu nhat
         private static async Task<IResult> GetPopularArticles(int limit, IBlogRepository blogRepository, IMapper mapper)
         {
@@ -114,16 +130,54 @@ namespace TatBlog.WebApi.Endpoints
 
         //}
         // them post
-        private static async Task<IResult> AddPost(HttpContext context, PostEditModel model, IValidator<PostEditModel> validator, IBlogRepository blogRepository, IMapper mapper, IMediaManager mediaManager)
+        private static async Task<IResult> AddPost(
+              HttpContext context,
+              IBlogRepository blogRepository,
+              IMapper mapper,
+              IMediaManager mediaManager)
         {
-            if (await blogRepository.IsAuthorSlugExistedAsync(0, model.UrlSlug))
+            var model = await PostEditModel.BindAsync(context);
+            var slug = model.Title.GenerateSlug();
+            if (await blogRepository.IsPostSlugExistedAsync(model.Id, slug))
             {
-                return Results.Ok(ApiResponse.Fail(HttpStatusCode.Conflict, $"Slug '{model.UrlSlug}' đã được sử dụng"));
+                return Results.Ok(ApiResponse.Fail(
+                HttpStatusCode.Conflict, $"Slug '{slug}' đã được sử dụng cho bài viết khác"));
             }
-            var post = mapper.Map<Post>(model);
-            await blogRepository.AddOrUpdatePost(post);
-
-            return Results.Ok(ApiResponse.Success(mapper.Map<PostItem>(post), HttpStatusCode.Created));
+            var post = model.Id > 0 ? await
+            blogRepository.GetPostByIdAsync(model.Id) : null;
+            if (post == null)
+            {
+                post = new Post()
+                {
+                    PostedDate = DateTime.Now
+                };
+            }
+            post.Title = model.Title;
+            post.AuthorId = model.AuthorId;
+            post.CategoryId = model.CategoryId;
+            post.ShortDescription = model.ShortDescription;
+            post.Description = model.Description;
+            post.Meta = model.Meta;
+            post.Published = model.Published;
+            post.ModifiedDate = DateTime.Now;
+            post.UrlSlug = model.Title.GenerateSlug();
+            if (model.ImageFile?.Length > 0)
+            {
+                string hostname =
+                $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}/",
+                uploadedPath = await
+                mediaManager.SaveFileAsync(model.ImageFile.OpenReadStream(),
+                model.ImageFile.FileName,
+                model.ImageFile.ContentType);
+                if (!string.IsNullOrWhiteSpace(uploadedPath))
+                {
+                    post.ImageUrl = hostname + uploadedPath;
+                }
+            }
+            await blogRepository.CreateOrUpdatePostAsync(post,
+            model.GetSelectedTags());
+            return Results.Ok(ApiResponse.Success(
+            mapper.Map<PostItem>(post), HttpStatusCode.Created));
         }
         // set avatar
         private static async Task<IResult> SetPostPicture(int id, IFormFile imageFile, IBlogRepository blogRepository, IMediaManager mediaManager)
@@ -163,5 +217,48 @@ namespace TatBlog.WebApi.Endpoints
 
             return Results.Ok(ApiResponse.Success(paginationResult));
         }
+        //
+        private static async Task<IResult> GetFilter(
+            IAuthorRepository authorRepository,
+            IBlogRepository blogRepository)
+        {
+            var model = new PostFilterModel()
+            {
+                AuthorList = (await authorRepository.GetAuthorsAsync())
+            .Select(a => new SelectListItem()
+            {
+                Text = a.FullName,
+                Value = a.Id.ToString()
+            }),
+                CategoryList = (await blogRepository.GetCategoriesAsync())
+            .Select(c => new SelectListItem()
+            {
+                Text = c.Name,
+                Value = c.Id.ToString()
+            })
+            };
+            return Results.Ok(ApiResponse.Success(model));
+        }
+        private static async Task<IResult> GetFilteredPosts(
+        [AsParameters] PostFilterModel model,
+        [AsParameters] PagingModel pagingModel,
+        IBlogRepository blogRepository)
+        {
+            var postQuery = new PostQuery()
+            {
+                Keyword = model.Keyword,
+                CategoryId = model.CategoryId,
+                AuthorId = model.AuthorId,
+                Year = model.Year,
+                Month = model.Month,
+            };
+            var postsList = await blogRepository.GetPagedPostsAsync(
+            postQuery, pagingModel, posts =>
+            posts.ProjectToType<PostDto>());
+            var paginationResult = new PaginationResult<PostDto>(postsList);
+            return Results.Ok(ApiResponse.Success(paginationResult));
+        }
+        //
+
     }
 }
