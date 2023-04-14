@@ -9,7 +9,7 @@ const CategoriesWidget = () => {
     useEffect(() => {
         getCategories().then((data) => {
             if (data) {
-                setcategoryList(data.items);
+                setcategoryList(data);
             } else {
                 setcategoryList([]);
             }
@@ -24,7 +24,6 @@ const CategoriesWidget = () => {
                     {categoryList.map((item, index) => {
                         return (
                             <ListGroup.Item key={index}>
-                                {/* https://localhost:44309/api/categories?ShowOnMenu=true&PageSize=10&PageNumber=1 */}
                                 <Link
                                     to={`/blog/category?slug=${item.urlSlug}`}
                                     title={item.description}

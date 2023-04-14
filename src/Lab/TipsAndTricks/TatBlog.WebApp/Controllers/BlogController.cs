@@ -32,7 +32,7 @@ namespace TatBlog.WebApp.Controllers
                 PageSize = 5,
             };
 
-            var postsList = await _blogRepository.GetPagedPostsByQueryAsync(postQuery, pagingParams);
+            var postsList = await _blogRepository.GetPostByQueryAsync(postQuery, pagingParams);
             ViewBag.PostQuery = postQuery;
 
             return View(postsList);

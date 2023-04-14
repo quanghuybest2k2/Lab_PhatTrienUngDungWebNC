@@ -14,6 +14,8 @@
         // Nội dung chi tiết của bài viết
         public string Description { get; set; }
 
+        public bool Published { get; set; }
+
         // Metadata
         public string Meta { get; set; }
 

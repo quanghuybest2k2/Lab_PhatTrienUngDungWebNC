@@ -2,7 +2,7 @@ import { get_api } from "./Methods";
 
 export async function getCategories() {
     return get_api(
-        `https://localhost:44309/api/categories?PageSize=10&PageNumber=1`
+        `https://localhost:44309/api/categories`
     );
 }
 export async function getFeaturedPosts() {

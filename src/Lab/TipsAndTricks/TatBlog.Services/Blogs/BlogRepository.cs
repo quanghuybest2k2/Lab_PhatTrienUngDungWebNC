@@ -347,43 +347,28 @@ namespace TatBlog.Services.Blogs
         }
         //Tìm tất cả bài viết thỏa mãn điều kiện tìm kiếm được cho trong đối tượng
         // PostQuery(kết quả trả về kiểu IList<Post>).
-
-        public async Task<IPagedList<Post>> GetPagedPostsByQueryAsync(IPostQuery query, IPagingParams pagingParams, CancellationToken cancellationToken = default)
+        public async Task<IPagedList<Post>> GetPostByQueryAsync(PostQuery query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
         {
-            if (!string.IsNullOrWhiteSpace(query.Keyword))
-            {
-                var categoryQuery = _context.Set<Post>()
-                    .Include(a => a.Author)
-                    .Include(c => c.Category)
-                    .Include(t => t.Tags)
-                    .Where(x => x.Published && (
-                        x.AuthorId == query.AuthorId ||
-                        x.CategoryId == query.CategoryId ||
-                        x.PostedDate.Year == query.Year ||
-                        x.PostedDate.Month == query.Month ||
-                        (!string.IsNullOrWhiteSpace(query.CategorySlug) &&
-                            x.Category.UrlSlug.Contains(query.CategorySlug)) ||
-                        (!string.IsNullOrWhiteSpace(query.AuthorSlug) &&
-                            x.Author.UrlSlug.Contains(query.AuthorSlug)) ||
-                        (!string.IsNullOrWhiteSpace(query.TagSlug) &&
-                            x.Tags.Any(t => t.UrlSlug.Contains(query.TagSlug))) ||
-                        (!string.IsNullOrWhiteSpace(query.Keyword) &&
-                            x.Title.ToLower().Contains(query.Keyword.ToLower())) ||
-                        (!string.IsNullOrWhiteSpace(query.Keyword) &&
-                            x.ShortDescription.ToLower().Contains(query.Keyword.ToLower())) ||
-                        (!string.IsNullOrWhiteSpace(query.Keyword) &&
-                            x.Description.ToLower().Contains(query.Keyword.ToLower()))));
-                return await categoryQuery.ToPagedListAsync(pagingParams, cancellationToken);
-            }
-            else
-            {
-                var categoryQuery = _context.Set<Post>()
-                    .Include(a => a.Author)
-                    .Include(c => c.Category)
-                    .Include(t => t.Tags)
-                    .Where(x => x.Published);
-                return await categoryQuery.ToPagedListAsync(pagingParams, cancellationToken);
-            }
+            return await FilterPosts(query).ToPagedListAsync(
+                                    pageNumber,
+                                    pageSize,
+                                    nameof(Post.PostedDate),
+                                    "DESC",
+                                    cancellationToken);
+        }
+
+        public async Task<IPagedList<Post>> GetPostByQueryAsync(PostQuery query, IPagingParams pagingParams, CancellationToken cancellationToken = default)
+        {
+            return await FilterPosts(query).ToPagedListAsync(
+                                            pagingParams,
+                                            cancellationToken);
+        }
+
+        public async Task<IPagedList<T>> GetPostByQueryAsync<T>(PostQuery query, IPagingParams pagingParams, Func<IQueryable<Post>, IQueryable<T>> mapper, CancellationToken cancellationToken = default)
+        {
+            IQueryable<T> result = mapper(FilterPosts(query));
+
+            return await result.ToPagedListAsync(pagingParams, cancellationToken);
         }
         // Tìm và phân trang các bài viết thỏa mãn điều kiện tìm kiếm được cho trong
         // đối tượng PostQuery(kết quả trả về kiểu IPagedList<Post>)

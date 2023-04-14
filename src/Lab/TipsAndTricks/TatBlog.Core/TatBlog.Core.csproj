@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Setttings\" />
     <Folder Include="Constants\" />
+    <Folder Include="Setttings\" />
   </ItemGroup>
 
 </Project>
