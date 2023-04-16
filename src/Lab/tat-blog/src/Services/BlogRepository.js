@@ -8,7 +8,8 @@ export function getPosts(
     sortOrder = ""
 ) {
     return get_api(
-        `https://localhost:44309/api/posts?keyword=${keyword}&PublishedOnly=true&UnPublished=false&PageSize=${pageSize}&PageNumber=${pageNumber}&SortColumn=${sortColumn}&SortOrder=${sortOrder}`
+        //https://localhost:44309/api/posts?PublishedOnly=true&UnPublished=false&PageSize=10&PageNumber=1
+        `https://localhost:44309/api/posts?PublishedOnly=true&UnPublished=false&PageSize=10&PageNumber=1&SortColumn=${sortColumn}&SortOrder=${sortOrder}`
     );
 }
 export async function getPostsBySlug(slug = "") {
@@ -43,10 +44,12 @@ export function getPostsFilter(
     month = "",
     pageSize = 10,
     pageNumber = 1,
+    publishedOnly = true,
+    unPublished = false,
     sortColumn = "",
     sortOrder = ""
 ) {
-    let url = new URL("https://localhost:44309/api/posts/get-posts-filter");
+    let url = new URL(`https://localhost:44309/api/posts/get-posts-filter`);
     keyword !== "" && url.searchParams.append("Keyword", keyword);
     authorId !== "" && url.searchParams.append("AuthorId", authorId);
     categoryId !== "" && url.searchParams.append("CategoryId", categoryId);
@@ -54,6 +57,8 @@ export function getPostsFilter(
     month !== "" && url.searchParams.append("Month", month);
     sortColumn !== "" && url.searchParams.append("SortColumn", sortColumn);
     sortOrder !== "" && url.searchParams.append("SortOrder", sortOrder);
+    url.searchParams.append('PublishedOnly', publishedOnly);
+    url.searchParams.append('UnPublished', unPublished);
     url.searchParams.append("PageSize", pageSize);
     url.searchParams.append("PageNumber", pageNumber);
     return get_api(url.href);

@@ -68,21 +68,17 @@ namespace TatBlog.Services.Blogs
         Task<IList<Post>> GetPostRandomsAsync(int numPosts, CancellationToken cancellationToken = default);
         //Tìm tất cả bài viết thỏa mãn điều kiện tìm kiếm được cho trong đối tượng
         // PostQuery(kết quả trả về kiểu IList<Post>).
+
         Task<IPagedList<Post>> GetPostByQueryAsync(PostQuery query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default);
 
         Task<IPagedList<Post>> GetPostByQueryAsync(PostQuery query, IPagingParams pagingParams, CancellationToken cancellationToken = default);
 
         Task<IPagedList<T>> GetPostByQueryAsync<T>(PostQuery query, IPagingParams pagingParams, Func<IQueryable<Post>, IQueryable<T>> mapper, CancellationToken cancellationToken = default);
+
         // Tìm và phân trang các bài viết thỏa mãn điều kiện tìm kiếm được cho trong
         // đối tượng PostQuery(kết quả trả về kiểu IPagedList<Post>) // Đếm số lượng bài viết thỏa mãn điều kiện tìm kiếm được cho trong đối
         // tượng PostQuery.
         //IQueryable<Post> FilterPost(PostQuery pq);
-        IQueryable<Post> FilterPosts(PostQuery condition);
-        Task<IPagedList<Post>> GetPagedPostsAsync(
-        PostQuery condition,
-        int pageNumber = 1,
-        int pageSize = 10,
-       CancellationToken cancellationToken = default);
         //để hiển thị danh sách bài viết được đăng
         //trong tháng và năm đã chọn(do người dùng click chuột vào các tháng
         //trong view component Archives ở bài tập 3). 

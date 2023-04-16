@@ -27,6 +27,13 @@ public class PostValidator : AbstractValidator<PostEditModel>
         .WithMessage("Meta của bài viết không được để trống")
         .MaximumLength(1000)
         .WithMessage("Meta dài tối đa 1000");
+
+        RuleFor(p => p.UrlSlug)
+        .NotEmpty()
+        .WithMessage("Slug của bài viết không được để trống")
+        .MaximumLength(1000)
+        .WithMessage("Slug dài tối đa 1000");
+
         RuleFor(p => p.CategoryId)
         .NotEmpty()
         .WithMessage("Bạn phải chọn chủ đề cho bài viết");
