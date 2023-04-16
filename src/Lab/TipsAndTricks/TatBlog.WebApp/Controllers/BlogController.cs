@@ -43,7 +43,7 @@ namespace TatBlog.WebApp.Controllers
             {
                 CategorySlug = slug
             };
-            var categoriesList = await _blogRepository.GetPagedPostsAsync(postQuery);
+            var categoriesList = await _blogRepository.GetPostByQueryAsync(postQuery);
             ViewBag.PostQuery = postQuery;
             return View("Index", categoriesList);
         }
@@ -53,7 +53,7 @@ namespace TatBlog.WebApp.Controllers
             {
                 AuthorSlug = slug
             };
-            var authors = await _blogRepository.GetPagedPostsAsync(postQuery);
+            var authors = await _blogRepository.GetPostByQueryAsync(postQuery);
             ViewBag.PostQuery = postQuery;
             return View("Index", authors);
         }
@@ -63,7 +63,7 @@ namespace TatBlog.WebApp.Controllers
             {
                 TagSlug = slug
             };
-            var authors = await _blogRepository.GetPagedPostsAsync(postQuery);
+            var authors = await _blogRepository.GetPostByQueryAsync(postQuery);
             ViewBag.PostQuery = postQuery;
             return View("Index", authors);
         }

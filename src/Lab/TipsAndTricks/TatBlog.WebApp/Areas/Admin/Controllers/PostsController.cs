@@ -66,7 +66,7 @@ namespace TatBlog.WebApp.Areas.Admin.Controllers
             var postQuery = _mapper.Map<PostQuery>(model);
             _logger.LogInformation("Lấy danh sách bài viết từ CSDL");
             ViewBag.PostsList = await _blogRepository
-                .GetPagedPostsAsync(postQuery, 1, 10);
+                .GetPostByQueryAsync(postQuery, 1, 10);
             _logger.LogInformation("Chuẩn bị dữ liệu cho ViewModel");
             await PopulatePostFilterModelAsync(model);
             ViewData["PagerQuery"] = new PagerQuery

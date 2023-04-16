@@ -200,7 +200,6 @@ namespace TatBlog.Services.Blogs
                 await _context.SaveChangesAsync(cancellationToken);
                 return true;
             }
-            return false;
         }
         // Xóa một chuyên mục theo mã số cho trước
         public async Task<Category> RemoveCategoryByIdAsync(int id, CancellationToken cancellationToken = default)
@@ -309,7 +308,6 @@ namespace TatBlog.Services.Blogs
                 await _context.SaveChangesAsync(cancellationToken);
                 return true;
             }
-            return false;
         }
         // Tìm một bài viết theo mã số.
         public async Task<Post> FindPostByIdAsync(int id, CancellationToken cancellationToken = default)
@@ -359,9 +357,7 @@ namespace TatBlog.Services.Blogs
 
         public async Task<IPagedList<Post>> GetPostByQueryAsync(PostQuery query, IPagingParams pagingParams, CancellationToken cancellationToken = default)
         {
-            return await FilterPosts(query).ToPagedListAsync(
-                                            pagingParams,
-                                            cancellationToken);
+            return await FilterPosts(query).ToPagedListAsync( pagingParams,cancellationToken);
         }
 
         public async Task<IPagedList<T>> GetPostByQueryAsync<T>(PostQuery query, IPagingParams pagingParams, Func<IQueryable<Post>, IQueryable<T>> mapper, CancellationToken cancellationToken = default)
@@ -385,73 +381,84 @@ namespace TatBlog.Services.Blogs
                 cancellationToken);
         }
         // lọc bài viết
-        public IQueryable<Post> FilterPosts(PostQuery condition)
+        private IQueryable<Post> FilterPosts(PostQuery query)
         {
-            IQueryable<Post> posts = _context.Set<Post>()
-            .Include(x => x.Category)
-            .Include(x => x.Author)
-            .Include(x => x.Tags);
+            IQueryable<Post> postsQuery = _context.Set<Post>()
+                                                      .Include(p => p.Author)
+                                                      .Include(p => p.Category)
+                                                      .Include(p => p.Tags);
 
-            if (condition.PublishedOnly)
+            if (query.PublishedOnly)
             {
-                posts = posts.Where(x => x.Published);
+                postsQuery = postsQuery.Where(x => x.Published);
             }
 
-            if (condition.UnPublished)
+            if (query.UnPublished)
             {
-                posts = posts.Where(x => !x.Published);
+                postsQuery = postsQuery.Where(x => !x.Published);
             }
 
-            if (condition.CategoryId > 0)
+            if (query.CategoryId > 0)
             {
-                posts = posts.Where(x => x.CategoryId == condition.CategoryId);
+                postsQuery = postsQuery.Where(x => x.CategoryId == query.CategoryId);
+            }
+            if (query.AuthorId > 0)
+            {
+                postsQuery = postsQuery.Where(x => x.AuthorId == query.AuthorId);
             }
 
-            if (!string.IsNullOrWhiteSpace(condition.CategorySlug))
+            if (!string.IsNullOrWhiteSpace(query.AuthorSlug))
             {
-                posts = posts.Where(x => x.Category.UrlSlug == condition.CategorySlug);
+                postsQuery = postsQuery.Where(x => x.Author.UrlSlug == query.AuthorSlug);
             }
 
-            if (condition.AuthorId > 0)
+            if (!string.IsNullOrWhiteSpace(query.CategorySlug))
             {
-                posts = posts.Where(x => x.AuthorId == condition.AuthorId);
+                postsQuery = postsQuery.Where(x => x.Category.UrlSlug == query.CategorySlug);
             }
 
-            if (!string.IsNullOrWhiteSpace(condition.AuthorSlug))
+            if (!string.IsNullOrWhiteSpace(query.TagSlug))
             {
-                posts = posts.Where(x => x.Author.UrlSlug == condition.AuthorSlug);
+                postsQuery = postsQuery.Where(x => x.Tags.Any(t => t.UrlSlug == query.TagSlug));
             }
 
-            if (!string.IsNullOrWhiteSpace(condition.TagSlug))
+            if (!string.IsNullOrWhiteSpace(query.PostSlug))
             {
-                posts = posts.Where(x => x.Tags.Any(t => t.UrlSlug == condition.TagSlug));
+                postsQuery = postsQuery.Where(x => x.UrlSlug == query.PostSlug);
             }
 
-            if (!string.IsNullOrWhiteSpace(condition.Keyword))
+            if (!string.IsNullOrWhiteSpace(query.Keyword))
             {
-                posts = posts.Where(x => x.Title.Contains(condition.Keyword) ||
-                                         x.ShortDescription.Contains(condition.Keyword) ||
-                                         x.Description.Contains(condition.Keyword) ||
-                                         x.Category.Name.Contains(condition.Keyword) ||
-                                         x.Tags.Any(t => t.Name.Contains(condition.Keyword)));
+                postsQuery = postsQuery.Where(x => x.Title.Contains(query.Keyword) ||
+                             x.ShortDescription.Contains(query.Keyword) ||
+                             x.Description.Contains(query.Keyword) ||
+                             x.Category.Name.Contains(query.Keyword) ||
+                             x.Author.FullName.Contains(query.Keyword) ||
+                             x.Tags.Any(t => t.Name.Contains(query.Keyword)));
             }
 
-            if (condition.Year > 0)
+            if (query.Year > 0)
             {
-                posts = posts.Where(x => x.PostedDate.Year == condition.Year);
+                postsQuery = postsQuery.Where(x => x.PostedDate.Year == query.Year);
             }
 
-            if (condition.Month > 0)
+            if (query.Month > 0)
             {
-                posts = posts.Where(x => x.PostedDate.Month == condition.Month);
+                postsQuery = postsQuery.Where(x => x.PostedDate.Month == query.Month);
             }
 
-            if (!string.IsNullOrWhiteSpace(condition.TitleSlug))
+            if (query.Day > 0)
             {
-                posts = posts.Where(x => x.UrlSlug == condition.TitleSlug);
+                postsQuery = postsQuery.Where(x => x.PostedDate.Day == query.Day);
             }
 
-            return posts;
+            query.GetTagListAsync();
+            if (query.SelectedTag != null && query.SelectedTag.Count() > 0)
+            {
+                postsQuery = postsQuery.Where(p => query.SelectedTag.Intersect(p.Tags.Select(t => t.Name)).Count() > 0);
+            }
+
+            return postsQuery;
         }
         // loc tac gia
         private IQueryable<Author> FilterAuthors(AuthorQuery query)

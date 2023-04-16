@@ -42,5 +42,7 @@ namespace TatBlog.Core.Entities
         public Author Author { get; set; }
         // Danh sách các từ khóa của bài viết
         public IList<Tag> Tags { get; set; }
+        // danh sach comment
+        public IList<Comment> Comments { get; set; }
     }
 }

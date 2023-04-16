@@ -1,15 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-using TatBlog.Core.Contracts;
-
-namespace TatBlog.Core.Contracts;
+﻿namespace TatBlog.Core.Contracts;
 public interface IPagedList
-{
-    // Tổng số trang (số tập con)
+{ // Tổng số trang (số tập con)
     int PageCount { get; }
 
     // Tổng số phần từ trả về từ truy vấn

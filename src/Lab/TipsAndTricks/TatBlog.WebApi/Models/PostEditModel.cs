@@ -29,7 +29,6 @@ namespace TatBlog.WebApi.Models
         [DisplayName("Từ khoá (mỗi từ một dòng)")]
         public string SelectedTags { get; set; }
 
-        // Tách chuỗi chứa các thẻ thành một mảng các chuỗi
         public List<string> GetSelectedTags()
         {
             return (SelectedTags ?? "").Split(new[] { ",", ";", ".", "\r\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
