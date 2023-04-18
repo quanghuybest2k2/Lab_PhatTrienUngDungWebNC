@@ -14,33 +14,7 @@ import {
 } from "../../Redux/Reducer";
 
 const PostFilterPane = () => {
-    // const current = new Date(),
-    //     [keyword, setKeyword] = useState(""),
-    //     [authorId, setAuthorId] = useState(""),
-    //     [categoryId, setCategoryId] = useState(""),
-    //     [year, setYear] = useState(current.getFullYear()),
-    //     [month, setMonth] = useState(current.getMonth()),
-    //     [postFilter, setPostFilter] = useState({
-    //         authorList: [],
-    //         categoryList: [],
-    //         monthList: [],
-    //     });
-    // const handleSubmit = (e) => {
-    //     e.preventDefault();
-    // };
-    // useEffect(() => {
-    //     getFilter().then((data) => {
-    //         if (data) {
-    //             setPostFilter({
-    //                 authorList: data.authorList,
-    //                 categoryList: data.categoryList,
-    //                 monthList: data.monthList,
-    //             });
-    //         } else {
-    //             setPostFilter({ authorList: [], categoryList: [], monthList: [] });
-    //         }
-    //     });
-    // }, []);
+
     const postFilter = useSelector((state) => state.postFilter),
         dispatch = useDispatch(),
         [filter, setFilter] = useState({

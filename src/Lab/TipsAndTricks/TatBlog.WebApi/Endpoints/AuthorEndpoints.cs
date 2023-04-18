@@ -64,7 +64,7 @@ namespace TatBlog.WebApi.Endpoints
             IAuthorRepository authorRepository)
         {
             var authorsList = await authorRepository.GetPagedAuthorsAsync(model,
-            model.Name);
+            model.FullName);
             var paginationResult = new
             PaginationResult<AuthorItem>(authorsList);
             return Results.Ok(ApiResponse.Success(paginationResult));
