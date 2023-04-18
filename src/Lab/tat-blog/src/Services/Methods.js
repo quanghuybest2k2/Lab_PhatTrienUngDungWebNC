@@ -25,3 +25,14 @@ export async function post_api(your_api, formData) {
         return null;
     }
 }
+export async function delete_api(api, payload) {
+    try {
+        const response = await axios.delete(api, payload);
+        const data = response.data;
+        if (data.isSuccess) return data.result;
+        else return null;
+    } catch (error) {
+        console.log('Error', error.message);
+        return null;
+    }
+}

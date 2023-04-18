@@ -9,14 +9,15 @@ import PostDetail from "./Components/Post/PostDetail";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AdminLayout from "./Pages/Admin/Layout";
 import * as AdminIndex from "./Pages/Admin/Index";
-import Authors from "./Pages/Admin/Authors";
-import Categories from "./Pages/Admin/Categories";
-import Comments from "./Pages/Admin/Comments";
+import Authors from "./Pages/Admin/Author/Authors";
+import Categories from "./Pages/Admin/Category/Categories";
+import Comments from "./Pages/Admin/Comment/Comments";
 import Posts from "./Pages/Admin/Post/Posts";
-import Tags from "./Pages/Admin/Tags";
+import Tags from "./Pages/Admin/Tag/Tags";
 import NotFound from "./Pages/NotFound";
 import BadRequest from "./Pages/BadRequest";
 import Edit from "./Pages/Admin/Post/Edit";
+
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
           <Route path="/admin/posts/edit" element={<Edit />} />
           <Route path="/admin/posts/edit/:id" element={<Edit />} />
           <Route path="/admin/tags" element={<Tags />} />
+          <Route path="/admin/comments" element={<Comments />} />
         </Route>
         <Route path="/400" element={<BadRequest />} />
         <Route path="*" element={<NotFound />} />
