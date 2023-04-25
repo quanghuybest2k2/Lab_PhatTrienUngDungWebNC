@@ -79,12 +79,25 @@ namespace TatBlog.Services.Blogs
             return await _context.SaveChangesAsync(cancellationToken) > 0;
         }
         // xoa
-        public async Task<bool> DeleteCategoryAsync(
-            int id, CancellationToken cancellationToken = default)
+        public async Task<bool> DeleteCategoryAsync(int? id, CancellationToken cancellationToken = default)
         {
-            return await _context.Authors
-                .Where(x => x.Id == id)
-                .ExecuteDeleteAsync(cancellationToken) > 0;
+            if (id == null || _context.Categories == null)
+            {
+                Console.WriteLine("Không có chuyên mục nào");
+                return await Task.FromResult(false);
+            }
+
+            var category = await _context.Set<Category>().FindAsync(id);
+
+            if (category != null)
+            {
+                _context.Categories.Remove(category);
+
+                Console.WriteLine($"Đã xóa chuyên mục với id {id}");
+            }
+
+            var result = await _context.SaveChangesAsync(cancellationToken);
+            return result > 0;
         }
     }
 }

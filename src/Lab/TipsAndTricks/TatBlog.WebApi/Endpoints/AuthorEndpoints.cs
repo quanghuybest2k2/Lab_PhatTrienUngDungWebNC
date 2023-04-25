@@ -49,7 +49,7 @@ namespace TatBlog.WebApi.Endpoints
                             .Produces<ApiResponse<string>>();
 
             routeGroupBuilder.MapDelete("/{id:int}", DeleteAuthor)
-                          .WithName("DeleteAnAuthor")
+                          .WithName("DeleteAuthor")
                           .Produces(401)
                           .Produces<ApiResponse<string>>();
 
@@ -149,14 +149,10 @@ namespace TatBlog.WebApi.Endpoints
             ? Results.Ok(ApiResponse.Success("Author is updated",
             HttpStatusCode.NoContent))
             : Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, "Could not find author"));
- }
-        private static async Task<IResult> DeleteAuthor(int id,
-        IAuthorRepository authorRepository)
+        }
+        private static async Task<IResult> DeleteAuthor(int id, IAuthorRepository authorRepository)
         {
-            return await authorRepository.DeleteAuthorAsync(id)
-            ? Results.Ok(ApiResponse.Success("Author is deleted",
-            HttpStatusCode.NoContent))
-            : Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, "Could not find author"));
+            return await authorRepository.DeleteAuthorAsync(id) ? Results.Ok(ApiResponse.Success("Author is deleted", HttpStatusCode.NoContent)) : Results.Ok(ApiResponse.Fail(HttpStatusCode.NotFound, $"Could not find author with id = {id}"));
         }
 
         private static async Task<IResult> SetAuthorPicture(int id, IFormFile imageFile, IAuthorRepository authorRepository, IMediaManager mediaManager)

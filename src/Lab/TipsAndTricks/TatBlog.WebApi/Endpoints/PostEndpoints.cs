@@ -38,7 +38,7 @@ namespace TatBlog.WebApi.Endpoints
                      .Produces(404);
             routeGroupBuilder.MapGet("/{id:int}", GetPostDetails)
                        .WithName("GetPostDetails")
-                       .Produces<ApiResponse<AuthorItem>>()
+                       .Produces<ApiResponse<PostItem>>()
                        .Produces(404);
             routeGroupBuilder.MapPost("/", AddPost)
                       .WithName("AddNewPost")

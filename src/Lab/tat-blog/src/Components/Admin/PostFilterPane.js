@@ -26,6 +26,20 @@ const PostFilterPane = () => {
         dispatch(reset());
     };
 
+    useEffect(() => {
+        getFilter().then((data) => {
+            if (data) {
+                setFilter({
+                    authorList: data.authorList,
+                    categoryList: data.categoryList,
+                    monthList: data.monthList,
+                });
+            } else {
+                setFilter({ authorList: [], categoryList: [], monthList: [] });
+            }
+        });
+    }, []);
+
     return (
         <Form
             method="get"

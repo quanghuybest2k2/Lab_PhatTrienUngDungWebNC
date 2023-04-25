@@ -35,20 +35,17 @@ namespace TatBlog.WebApi.Endpoints
             routeGroupBuilder.MapPost("/", AddTag)
                              .AddEndpointFilter<ValidatorFilter<TagEditModel>>()
                              .WithName("AddNewTag")
-                             .RequireAuthorization()
                              .Produces(401)
                              .Produces<ApiResponse<TagItem>>();
 
             routeGroupBuilder.MapPut("/{id:int}", UpdateTag)
                              .WithName("UpdateTag")
                              .AddEndpointFilter<ValidatorFilter<TagFilterModel>>()
-                             .RequireAuthorization()
                              .Produces(401)
                              .Produces<ApiResponse<string>>();
 
             routeGroupBuilder.MapDelete("/{id:int}", DeleteTag)
                              .WithName("DeleteTag")
-                             .RequireAuthorization()
                              .Produces(401)
                              .Produces<ApiResponse<string>>();
 

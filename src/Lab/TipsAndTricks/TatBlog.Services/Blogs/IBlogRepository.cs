@@ -177,7 +177,7 @@ namespace TatBlog.Services.Blogs
                  IPagingParams pagingParams,
                  Func<IQueryable<Post>, IQueryable<T>> mapper);
         //
-        Task<Author> GetCachedPostByIdAsync(int postId);
+        Task<Post> GetCachedPostByIdAsync(int postId);
         //
         Task<bool> SetImageUrlAsync(
        int id, string imageUrl,
