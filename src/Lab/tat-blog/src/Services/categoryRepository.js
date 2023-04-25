@@ -1,4 +1,4 @@
-import { get_api, post_api, delete_api } from './Methods';
+import { get_api, post_api, delete_api } from "./Methods";
 
 export async function getCategories() {
     return get_api(`https://localhost:44309/api/categories`);
@@ -13,7 +13,7 @@ export async function getCategoryById(id = 0) {
 }
 
 export function addOrUpdate(formData) {
-    return post_api('https://localhost:44309/api/categories', formData);
+    return post_api("https://localhost:44309/api/categories", formData);
 }
 
 export async function deleteCategoryById(id) {

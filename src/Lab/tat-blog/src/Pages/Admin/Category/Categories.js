@@ -1,29 +1,46 @@
-import React, { useEffect, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Table from 'react-bootstrap/Table';
-import { Link, useParams } from 'react-router-dom';
-import Loading from '../../../Components/Loading';
-import { getCategories } from '../../../Services/categoryRepository';
+import React, { useEffect, useState } from "react";
+import Button from "react-bootstrap/Button";
+import Table from "react-bootstrap/Table";
+import { Link } from "react-router-dom";
+import Loading from "../../../Components/Loading";
+import {
+    getCategories,
+    deleteCategoryById,
+} from "../../../Services/categoryRepository";
 import CategoryFilterPane from "../../../Components/Admin/CategoryFilterPane";
-
 
 const Categories = () => {
     const [categoryList, setCategoryList] = useState([]);
     const [categoryQuery, setCategoryQuery] = useState({});
     const [isVisibleLoading, setIsVisibleLoading] = useState(true);
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
     useEffect(() => {
-        document.title = 'Danh sách chủ đề';
+        document.title = "Danh sách chủ đề";
         getCategories().then((data) => {
             if (data) {
                 setCategoryQuery((pre) => {
-                    return { ...pre, to: '/admin/categories' };
+                    return { ...pre, to: "/admin/categories" };
                 });
                 setCategoryList(data);
             } else setCategoryList([]);
             setIsVisibleLoading(false);
         });
     }, []);
+
+    const handleDeleteClick = async (categoryId) => {
+        const confirmDelete = window.confirm("Bạn có muốn xóa chủ đề này không?");
+        if (confirmDelete) {
+            setShowDeleteConfirmation(true);
+            try {
+                await deleteCategoryById(categoryId);
+                const updatedCategories = categoryList.filter((category) => category.id !== categoryId);
+                setCategoryList(updatedCategories);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    };
 
     return (
         <>
@@ -38,6 +55,7 @@ const Categories = () => {
                             <th>Tiêu đề</th>
                             <th>Bài viết liên quan</th>
                             <th>Hiển thị</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -45,7 +63,10 @@ const Categories = () => {
                             categoryList.map((item, index) => (
                                 <tr key={index}>
                                     <td>
-                                        <Link to={`/admin/categories/edit/${item.id}`} className="text-bold">
+                                        <Link
+                                            to={`/admin/categories/edit/${item.id}`}
+                                            className="text-bold"
+                                        >
                                             {item.name}
                                         </Link>
                                         <p className="text-muted">{item.description}</p>
@@ -53,17 +74,16 @@ const Categories = () => {
                                     <td>{item.postCount}</td>
                                     <td>
                                         {item.showOnMenu ? (
-                                            <Button variant="success">
-                                                Có
-                                            </Button>
+                                            <Button variant="warning">Có</Button>
                                         ) : (
-                                            <Button variant="warning">
-                                                Không
-                                            </Button>
+                                            <Button variant="danger">Không</Button>
                                         )}
                                     </td>
                                     <td>
-                                        <Button variant="danger">
+                                        <Button
+                                            variant="danger"
+                                            onClick={() => handleDeleteClick(item.id)}
+                                        >
                                             Xoá
                                         </Button>
                                     </td>
@@ -72,7 +92,9 @@ const Categories = () => {
                         ) : (
                             <tr>
                                 <td colSpan={4}>
-                                    <h4 className="text-danger text-center">Không tìm thấy chủ đề nào</h4>
+                                    <h4 className="text-danger text-center">
+                                        Không tìm thấy chủ đề nào
+                                    </h4>
                                 </td>
                             </tr>
                         )}

@@ -18,7 +18,7 @@ const CategoryFilterPane = () => {
                 />
             </Form.Group>
             <Form.Group className="col-auto">
-                <Form.Label className="form-check-label"> Hiển thị </Form.Label>
+                <Form.Label className="form-check-label"> Hiển thị trên Menu </Form.Label>
                 <Form.Control
                     className="form-check-input"
                     type="checkbox"
