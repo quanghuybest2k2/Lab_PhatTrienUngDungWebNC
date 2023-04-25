@@ -1037,14 +1037,14 @@ namespace TatBlog.Services.Blogs
             return await projectedPosts.ToPagedListAsync(pagingParams);
         }
         // lay chi tiet bài viết
-        public async Task<Author> GetCachedPostByIdAsync(int postId)
+        public async Task<Post> GetCachedPostByIdAsync(int postId)
         {
             return await _memoryCache.GetOrCreateAsync(
                 $"author.by-id.{postId}",
                 async (entry) =>
                 {
                     entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30);
-                    return await GetAuthorByIdAsync(postId);
+                    return await GetPostByIdAsync(postId);
                 });
         }
         // set avatar

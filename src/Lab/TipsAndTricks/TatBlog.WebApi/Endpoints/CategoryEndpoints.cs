@@ -34,20 +34,17 @@ namespace TatBlog.WebApi.Endpoints
             routeGroupBuilder.MapPost("/", AddCategory)
                              .AddEndpointFilter<ValidatorFilter<CategoryEditModel>>()
                              .WithName("AddNewCategory")
-                             .RequireAuthorization()
                              .Produces(401)
                              .Produces<ApiResponse<CategoryItem>>();
 
             routeGroupBuilder.MapPut("/{id:int}", UpdateCategory)
                              .WithName("UpdateCategory")
                              .AddEndpointFilter<ValidatorFilter<CategoryEditModel>>()
-                             .RequireAuthorization()
                              .Produces(401)
                              .Produces<ApiResponse<string>>();
 
             routeGroupBuilder.MapDelete("/{id:int}", DeleteCategory)
                              .WithName("DeleteCategory")
-                             .RequireAuthorization()
                              .Produces(401)
                              .Produces<ApiResponse<string>>();
 

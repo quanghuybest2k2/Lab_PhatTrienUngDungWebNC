@@ -11,12 +11,13 @@ import AdminLayout from "./Pages/Admin/Layout";
 import * as AdminIndex from "./Pages/Admin/Index";
 import Authors from "./Pages/Admin/Author/Authors";
 import Categories from "./Pages/Admin/Category/Categories";
+import * as CategoryEdit from './Pages/Admin/Category/Edit';
 import Comments from "./Pages/Admin/Comment/Comments";
 import Posts from "./Pages/Admin/Post/Posts";
+import * as PostEdit from "./Pages/Admin/Post/Edit";
 import Tags from "./Pages/Admin/Tag/Tags";
 import NotFound from "./Pages/NotFound";
 import BadRequest from "./Pages/BadRequest";
-import Edit from "./Pages/Admin/Post/Edit";
 
 
 function App() {
@@ -48,8 +49,10 @@ function App() {
           <Route path="/admin/categories" element={<Categories />} />
           <Route path="/admin/comments" element={<Comments />} />
           <Route path="/admin/posts" element={<Posts />} />
-          <Route path="/admin/posts/edit" element={<Edit />} />
-          <Route path="/admin/posts/edit/:id" element={<Edit />} />
+          <Route path="/admin/posts/edit" element={<PostEdit.default />} />
+          <Route path="/admin/posts/edit/:id" element={<PostEdit.default />} />
+          <Route path="/admin/categories/edit" element={<CategoryEdit.default />} />
+          <Route path="/admin/categories/edit/:id" element={<CategoryEdit.default />} />
           <Route path="/admin/tags" element={<Tags />} />
           <Route path="/admin/comments" element={<Comments />} />
         </Route>
